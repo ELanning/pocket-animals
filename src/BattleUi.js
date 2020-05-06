@@ -1,8 +1,9 @@
 // Handles the view of the Pocket Animals game.
 // https://boardgame.io/documentation/#/
-import React from 'react';
-import PropTypes from 'prop-types';
 import { Button } from '@material-ui/core';
+import PropTypes from 'prop-types';
+import React from 'react';
+
 import { Box, Flex, Grid } from './Box';
 
 BattleUi.propTypes = {

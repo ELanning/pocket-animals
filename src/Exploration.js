@@ -1,7 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { useVideoCapture } from './useVideoCapture';
 import * as mobileNet from '@tensorflow-models/mobilenet';
+import PropTypes from 'prop-types';
+import React from 'react';
+
+import { useVideoCapture } from './useVideoCapture';
 
 // Start model loading as soon as possible to reduce upfront cost.
 const mobileNetPromise = mobileNet.load();

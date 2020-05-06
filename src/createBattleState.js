@@ -1,7 +1,7 @@
 // Handles the model and controller part of the battle.
 // https://boardgame.io/documentation/#/
 export function createBattleState(setupData) {
-	const battleState = {
+	return {
 		name: 'pocket-animals-battle',
 
 		// Using a closure to initialize setup, because
@@ -11,7 +11,7 @@ export function createBattleState(setupData) {
 		},
 
 		moves: {
-			clickCell(G, ctx, id) {
+			clickCell(G, context, id) {
 				return G;
 			}
 		},
@@ -20,7 +20,7 @@ export function createBattleState(setupData) {
 			moveLimit: 1
 		},
 
-		endIf: (G, ctx) => {},
+		endIf: (G, context) => {},
 
 		ai: {
 			enumerate: G => {
@@ -28,6 +28,4 @@ export function createBattleState(setupData) {
 			}
 		}
 	};
-
-	return battleState;
 }

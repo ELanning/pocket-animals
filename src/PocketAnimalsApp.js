@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { createUser, createAnimal } from './Entities';
-import { Exploration } from './Exploration';
+import React, { useState } from 'react';
+
 import { Battle } from './Battle';
+import { createAnimal, createUser } from './Entities';
+import { Exploration } from './Exploration';
 
 PocketAnimalsApp.propTypes = {
 	currentUserId: PropTypes.number.isRequired,
@@ -19,7 +20,7 @@ PocketAnimalsApp.propTypes = {
 export function PocketAnimalsApp({ currentUserId, entities }) {
 	const currentUser = entities.users[currentUserId];
 	const [view, setView] = useState('exploration');
-	const [battleProps, setBattleProps] = useState(null);
+	const [battleProperties, setBattleProperties] = useState();
 
 	const handlePrediction = predictions => {
 		const dummyUserId = createUser({ name: '' }).id;
@@ -34,18 +35,20 @@ export function PocketAnimalsApp({ currentUserId, entities }) {
 			dex: 10,
 			luk: 10
 		});
-		setBattleProps({ entities });
+		setBattleProperties({ entities });
 		setView('battle');
 	};
 
-	let viewComponent = null;
+	let viewComponent = undefined;
 	switch (view) {
 		case 'exploration':
 			viewComponent = <Exploration onPrediction={handlePrediction} />;
 			break;
+
 		case 'battle':
-			viewComponent = <Battle {...battleProps} />;
+			viewComponent = <Battle {...battleProperties} />;
 			break;
+
 		default:
 			throw new Error(`Unexpected view: ${view}`);
 	}

@@ -53,9 +53,10 @@
 		],
 		"prefer-const": "error",
 		"prettier/prettier": "error",
-		"mozilla/balanced-listeners": "error",
-		"mozilla/no-useless-removeEventListener": "error",
-		"mozilla/use-includes-instead-of-indexOf": "error",
+		"sonarjs/cognitive-complexity": "off",
+		"promise/catch-or-return": "off",
+		"promise/always-return": "off",
+		"promise/no-nesting": "off",
 		"unicorn/filename-case": [
 			"error",
 			{

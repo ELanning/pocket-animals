@@ -1,17 +1,18 @@
+import PropTypes from 'prop-types';
 import React from 'react';
 import styled from 'styled-components';
 import {
-	color,
-	space,
-	layout,
-	typography,
-	flexbox,
-	grid,
 	background,
 	border,
+	color,
+	compose,
+	flexbox,
+	grid,
+	layout,
 	position,
 	shadow,
-	compose
+	space,
+	typography
 } from 'styled-system';
 
 // See https://styled-system.com/api/ for detailed usage.
@@ -20,6 +21,9 @@ export const Box = styled('div')(
 	compose(typography, space, color, layout, flexbox, grid, background, border, position, shadow)
 );
 
+Flex.propTypes = {
+	children: PropTypes.node
+};
 export function Flex({ children, ...rest }) {
 	return (
 		<Box {...rest} display="flex">
@@ -28,6 +32,9 @@ export function Flex({ children, ...rest }) {
 	);
 }
 
+Grid.propTypes = {
+	children: PropTypes.node
+};
 export function Grid({ children, ...rest }) {
 	return (
 		<Box {...rest} display="Grid">

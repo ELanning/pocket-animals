@@ -1,7 +1,9 @@
+import './index.css';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import { Entities, createUser, createAnimal } from './Entities';
+
+import { createAnimal, createUser, Entities } from './Entities';
 import { PocketAnimalsApp } from './PocketAnimalsApp';
 import * as serviceWorker from './serviceWorker';
 
@@ -23,7 +25,7 @@ ReactDOM.render(
 	<React.StrictMode>
 		<PocketAnimalsApp entities={Entities} currentUserId={exampleUserId} />
 	</React.StrictMode>,
-	document.getElementById('root')
+	document.querySelector('#root')
 );
 
 // Service worker documentation: https://bit.ly/CRA-PWA

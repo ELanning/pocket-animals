@@ -1,8 +1,8 @@
 // Contains the global entities of the app.
 // Understand the design of this pattern before making changes:
 // https://www.dataorienteddesign.com/dodbook/node5.html
-import { User } from './User';
 import { Animal } from './Animal';
+import { User } from './User';
 
 let uuid = 0;
 
