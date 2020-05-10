@@ -3,14 +3,17 @@ import './index.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { createAnimal, createUser, Entities } from './Entities';
+import { Entity } from './Entity';
 import { PocketAnimalsApp } from './PocketAnimalsApp';
 import * as serviceWorker from './serviceWorker';
+import { User } from './User';
 
 // Setup example data.
-const exampleUserId = createUser({ name: 'Erik' }).id;
-createAnimal({
+const entity = new Entity();
+const exampleUserId = entity.createUser(new User('Erik Lanning')).id as string;
+entity.createAnimal({
 	userId: exampleUserId,
+	level: 1,
 	hp: 100,
 	sp: 50,
 	str: 3,
@@ -23,7 +26,7 @@ createAnimal({
 
 ReactDOM.render(
 	<React.StrictMode>
-		<PocketAnimalsApp entities={Entities} currentUserId={exampleUserId} />
+		<PocketAnimalsApp entity={entity} currentUserId={exampleUserId} />
 	</React.StrictMode>,
 	document.querySelector('#root')
 );

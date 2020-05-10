@@ -9,13 +9,21 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.5",
+    "@types/react": "^16.9.34",
+    "@types/react-dom": "^16.9.7",
+    "@types/styled-components": "^5.1.0",
+    "@types/styled-system": "^5.1.9",
     "boardgame.io": "^0.39.10",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
     "styled-components": "^5.1.0",
-    "styled-system": "^5.1.5"
+    "styled-components-ts": "^0.0.15",
+    "styled-system": "^5.1.5",
+    "typescript": "^3.8.3"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -39,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "eslint": "^6.8.0",
     "eslint-config-adjunct": "^4.2.0",
     "eslint-config-prettier": "^6.11.0",

@@ -1,23 +1,22 @@
+import React, { FunctionComponent } from 'react';
 import * as mobileNet from '@tensorflow-models/mobilenet';
-import PropTypes from 'prop-types';
-import React from 'react';
 
 import { useVideoCapture } from './useVideoCapture';
 
 // Start model loading as soon as possible to reduce upfront cost.
 const mobileNetPromise = mobileNet.load();
 
-Exploration.propTypes = {
-	onPrediction: PropTypes.func.isRequired
-};
+interface Props {
+	onPrediction: (predictions: { className: string; probability: number }[]) => void;
+}
 
-export function Exploration({ onPrediction }) {
+export const Exploration: FunctionComponent<Props> = ({ onPrediction }: Props) => {
 	const { videoRef, canvasRef, takeCameraSnap } = useVideoCapture();
 
 	const handleCameraCapture = async () => {
 		takeCameraSnap();
 		const model = await mobileNetPromise;
-		const predictions = await model.classify(canvasRef.current);
+		const predictions = await model.classify(canvasRef.current as HTMLCanvasElement);
 		onPrediction(predictions);
 	};
 
@@ -32,4 +31,4 @@ export function Exploration({ onPrediction }) {
 			</header>
 		</div>
 	);
-}
+};
