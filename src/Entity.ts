@@ -2,19 +2,23 @@
 // Understand the design of this pattern before making changes:
 // https://www.dataorienteddesign.com/dodbook/node5.html
 import { Animal } from './Animal';
+import { animalKindToSprite } from './animalKindToSprite';
 import { assert } from './assert';
+import { Sprite } from './Sprite';
 import { User } from './User';
 
 // Treat Entities as a SQL table. When updating, keep entities in 3rd Normal Form.
 export class Entity {
 	users: ExtendedMap<User>;
 	animals: ExtendedMap<Animal>;
+	sprites: ExtendedMap<Sprite>;
 	inBattle: Set<string>;
 	#uuid: number;
 
 	constructor() {
 		this.users = new ExtendedMap<User>();
 		this.animals = new ExtendedMap<Animal>();
+		this.sprites = new ExtendedMap<Sprite>();
 		this.inBattle = new Set<string>();
 		this.#uuid = 0;
 	}
@@ -41,6 +45,7 @@ export class Entity {
 		const id = this.getUniqueId();
 		animal.id = id;
 		this.animals.set(id, animal);
+		this.sprites.set(id, new Sprite(animalKindToSprite[animal.kind]));
 
 		return this.animals.get(id) as Animal;
 	};

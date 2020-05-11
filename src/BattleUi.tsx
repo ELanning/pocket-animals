@@ -4,7 +4,7 @@ import { Button } from '@material-ui/core';
 import React, { FunctionComponent } from 'react';
 
 import { assert } from './assert';
-import { Box, Grid } from './Box';
+import { Box, Flex, Grid } from './Box';
 import { Entity } from './Entity';
 import background from './images/background.png';
 
@@ -40,33 +40,22 @@ export const BattleUi: FunctionComponent<Props> = ({
 	const usersAnimals = G.getUsersAnimals(playerID);
 	assert(usersAnimals.length, 'User must have one or more animals.', G, ctx, playerID);
 	const activeAnimal = usersAnimals.find(animal => G.inBattle.has(animal.id as string));
-	assert(activeAnimal, 'User must have an in-battle animal', G, ctx);
+	assert(activeAnimal?.id, 'User must have an in-battle animal', G, ctx);
 
 	// Get enemy.
 	const enemyId = [...G.inBattle].find(id => id !== activeAnimal.id);
 	assert(enemyId, 'Battle must have an enemy id.', G, ctx);
 	const enemyAnimal = G.animals.get(enemyId as string);
-	assert(enemyAnimal, 'Battle must have an enemy.', G, ctx);
+	assert(enemyAnimal?.id, 'Battle must have an enemy.', G, ctx);
 
 	return (
 		<Box
 			backgroundImage={`url(${background})`}
-			backgroundSize="contain"
+			backgroundSize="cover"
 			backgroundRepeat="no-repeat"
 			minHeight="100vh"
+			position="relative"
 		>
-			<Box>
-				<Box>
-					Hp {activeAnimal.hp} / Sp {activeAnimal.sp}
-				</Box>
-				<Box>Your Guy</Box>
-			</Box>
-			<Box>
-				<Box>
-					Hp {enemyAnimal.hp} / Sp {enemyAnimal.sp}
-				</Box>
-				<Box>Enemy Guy</Box>
-			</Box>
 			<Grid
 				gridTemplateColumns="repeat(2, 1fr)"
 				gridTemplateRows="repeat(2, 1fr)"
@@ -95,6 +84,30 @@ export const BattleUi: FunctionComponent<Props> = ({
 					</Button>
 				</Box>
 			</Grid>
+			<Box position="absolute" bottom="0px" width="100%">
+				<Flex justifyContent="space-between" maxWidth="784px">
+					<Box>
+						<Box>
+							Hp {activeAnimal.hp} / Sp {activeAnimal.sp}
+						</Box>
+						<Box>
+							<img src={G.sprites.get(activeAnimal.id)?.url} height="160px" />
+						</Box>
+					</Box>
+					<Box>
+						<Box>
+							Hp {enemyAnimal.hp} / Sp {enemyAnimal.sp}
+						</Box>
+						<Box>
+							<img
+								src={G.sprites.get(enemyAnimal.id)?.url}
+								height="160px"
+								style={{ transform: 'scaleX(-1)' }}
+							/>
+						</Box>
+					</Box>
+				</Flex>
+			</Box>
 		</Box>
 	);
 };

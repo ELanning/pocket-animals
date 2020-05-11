@@ -23,6 +23,7 @@ export const PocketAnimalsApp: FunctionComponent<Props> = ({ currentUserId, enti
 		const dummyUserId = entity.createUser({ name: '' }).id as string;
 		const enemyAnimal = entity.createAnimal({
 			userId: dummyUserId,
+			kind: 'alligator',
 			level: 1,
 			hp: 10,
 			sp: 10,

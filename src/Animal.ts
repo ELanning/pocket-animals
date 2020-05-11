@@ -2,7 +2,8 @@ import { assert } from './assert';
 
 export class Animal {
 	constructor(
-		public userId: string,
+		public userId: string, // User associated with animal.
+		public kind: string, // Animal kind, eg "corgi", "fireAnt", ...
 		public level: number,
 		public hp: number,
 		public sp: number,
@@ -14,6 +15,7 @@ export class Animal {
 		public luk: number,
 		public id?: string // Use undefined for unsaved animals.
 	) {
+		// TODO: Assert kind is valid.
 		assert(Number.isInteger(level), '', this);
 		assert(Number.isInteger(hp), '', this);
 		assert(Number.isInteger(sp), '', this);

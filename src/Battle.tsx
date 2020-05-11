@@ -1,4 +1,3 @@
-import { Debug } from 'boardgame.io/debug';
 import { Local } from 'boardgame.io/multiplayer';
 import { Client } from 'boardgame.io/react';
 import React, { FunctionComponent } from 'react';
@@ -20,7 +19,6 @@ export const Battle: FunctionComponent<Props> = ({ currentUserId, entity }: Prop
 	const BattleClient = Client({
 		game: createBattleState(entity),
 		board: BattleUi,
-		debug: { impl: Debug },
 		numPlayers: 2,
 		multiplayer: Local()
 	});

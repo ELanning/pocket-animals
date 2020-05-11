@@ -13,6 +13,7 @@ const entity = new Entity();
 const exampleUserId = entity.createUser(new User('Erik Lanning')).id as string;
 entity.createAnimal({
 	userId: exampleUserId,
+	kind: 'duck',
 	level: 1,
 	hp: 100,
 	sp: 50,
