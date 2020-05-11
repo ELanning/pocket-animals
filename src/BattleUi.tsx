@@ -1,11 +1,11 @@
 // Handles the view of the Pocket Animals game.
 // https://boardgame.io/documentation/#/
-import React, { FunctionComponent } from 'react';
 import { Button } from '@material-ui/core';
+import React, { FunctionComponent } from 'react';
 
 import { assert } from './assert';
+import { Box, Grid } from './Box';
 import { Entity } from './Entity';
-import { Box, Flex, Grid } from './Box';
 import background from './images/background.png';
 
 interface Moves {
@@ -37,8 +37,8 @@ export const BattleUi: FunctionComponent<Props> = ({
 	isPreview
 }: Props) => {
 	// Get user's in-battle animal.
-	const usersAnimals = G.getUsersAnimals(ctx.currentPlayer);
-	assert(usersAnimals.length, 'User must have one or more animals.', G, ctx);
+	const usersAnimals = G.getUsersAnimals(playerID);
+	assert(usersAnimals.length, 'User must have one or more animals.', G, ctx, playerID);
 	const activeAnimal = usersAnimals.find(animal => G.inBattle.has(animal.id as string));
 	assert(activeAnimal, 'User must have an in-battle animal', G, ctx);
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+
 import { assert } from './assert';
 
 export function useVideoCapture() {

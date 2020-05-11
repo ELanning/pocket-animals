@@ -9,13 +9,14 @@
 		"plugin:react/recommended",
 		"plugin:import/errors",
 		"plugin:import/warnings",
+		"plugin:@typescript-eslint/recommended",
 		"adjunct"
 	],
 	"globals": {
 		"Atomics": "readonly",
 		"SharedArrayBuffer": "readonly"
 	},
-	"parser": "babel-eslint",
+	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"ecmaFeatures": {
 			"jsx": true
@@ -23,7 +24,7 @@
 		"ecmaVersion": 2019,
 		"sourceType": "module"
 	},
-	"plugins": ["react", "react-hooks", "import"],
+	"plugins": ["react", "react-hooks", "import", "@typescript-eslint/eslint-plugin"],
 	"settings": {
 		"import/resolver": {
 			"node": {
@@ -33,7 +34,12 @@
 	},
 	"rules": {
 		"eqeqeq": "error",
+		"@typescript-eslint/no-unused-vars": "warn",
+		"@typescript-eslint/explicit-function-return-type": "off",
+		"@typescript-eslint/no-use-before-define": "off",
+		"@typescript-eslint/no-explicit-any": "off",
 		"react-hooks/exhaustive-deps": "warn",
+		"react/prop-types": "off",
 		"import/prefer-default-export": "off",
 		"import/no-extraneous-dependencies": [
 			"error",
@@ -58,6 +64,7 @@
 		"promise/catch-or-return": "off",
 		"promise/always-return": "off",
 		"promise/no-nesting": "off",
+		"unicorn/no-null": "warn",
 		"unicorn/prevent-abbreviations": "off",
 		"unicorn/filename-case": [
 			"error",

@@ -1,5 +1,5 @@
-import React, { FunctionComponent } from 'react';
 import * as mobileNet from '@tensorflow-models/mobilenet';
+import React, { FunctionComponent } from 'react';
 
 import { useVideoCapture } from './useVideoCapture';
 

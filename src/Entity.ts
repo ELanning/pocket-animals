@@ -2,8 +2,8 @@
 // Understand the design of this pattern before making changes:
 // https://www.dataorienteddesign.com/dodbook/node5.html
 import { Animal } from './Animal';
-import { User } from './User';
 import { assert } from './assert';
+import { User } from './User';
 
 // Treat Entities as a SQL table. When updating, keep entities in 3rd Normal Form.
 export class Entity {
@@ -49,6 +49,12 @@ export class Entity {
 		// (Will likely be a GUID when backend is implemented.)
 		return (this.#uuid++).toString();
 	};
+
+	[Symbol.iterator] = () => {
+		// Log instead of throw.
+		// Throwing causes issues with React debug tools.
+		console.error('Do not iterate on Entity. Prefer mutation.');
+	};
 }
 
 // Key-value map, with convenience functions.
@@ -56,8 +62,14 @@ class ExtendedMap<V> extends Map<string, V> {
 	asArray = () => {
 		return [...this.values()];
 	};
+
 	asIdArray = () => {
 		return [...this.keys()];
 	};
+
 	asIdSet = () => new Set(this.asIdArray());
+
+	[Symbol.iterator] = () => {
+		return this.entries();
+	};
 }

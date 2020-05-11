@@ -1,9 +1,9 @@
-import React, { FunctionComponent, useState } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
-import { Battle } from './Battle';
-import { Exploration } from './Exploration';
-import { Entity } from './Entity';
 import { assert } from './assert';
+import { Battle } from './Battle';
+import { Entity } from './Entity';
+import { Exploration } from './Exploration';
 
 interface Props {
 	currentUserId: string;
@@ -14,8 +14,11 @@ interface Props {
 // Avoid putting complicated non-transition logic within this component.
 export const PocketAnimalsApp: FunctionComponent<Props> = ({ currentUserId, entity }) => {
 	const currentUser = entity.users.get(currentUserId);
-	const [view, setView] = useState<string>('battle');
-	const [battleProperties, setBattleProperties] = useState(() => {
+	const [view, setView] = useState<string>('loading');
+	const [battleProps, setBattleProps] = useState<any>();
+
+	// This block is for debugging purposes only.
+	useEffect(() => {
 		// Add enemy animal to the battle.
 		const dummyUserId = entity.createUser({ name: '' }).id as string;
 		const enemyAnimal = entity.createAnimal({
@@ -37,11 +40,12 @@ export const PocketAnimalsApp: FunctionComponent<Props> = ({ currentUserId, enti
 		assert(usersAnimals[0].id, 'user must have an animal', currentUserId, entity);
 		entity.inBattle.add(usersAnimals[0].id);
 
-		return { entity, currentUserId };
-	});
+		setBattleProps({ entity, currentUserId });
+		setView('battle');
+	}, [currentUserId, entity]);
 
 	const handlePrediction = (predictions: { className: string; probability: number }[]) => {
-		setBattleProperties({ entity, currentUserId });
+		setBattleProps({ entity, currentUserId });
 		setView('battle');
 	};
 
@@ -52,7 +56,10 @@ export const PocketAnimalsApp: FunctionComponent<Props> = ({ currentUserId, enti
 			break;
 
 		case 'battle':
-			viewComponent = <Battle {...battleProperties} />;
+			viewComponent = <Battle {...battleProps} />;
+			break;
+
+		case 'loading':
 			break;
 
 		default:
