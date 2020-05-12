@@ -54,6 +54,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 			backgroundSize="cover"
 			backgroundRepeat="no-repeat"
 			minHeight="100vh"
+			maxWidth="1000px"
 			position="relative"
 		>
 			<Grid
