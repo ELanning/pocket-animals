@@ -2,9 +2,9 @@
 // Understand the design of this pattern before making changes:
 // https://www.dataorienteddesign.com/dodbook/node5.html
 import { Animal } from './Animal';
-import { animalKindToSprite } from './animalKindToSprite';
 import { assert } from './assert';
 import { Sprite } from './Sprite';
+import { sprite } from './tables/sprite';
 import { User } from './User';
 
 // Treat Entities as a SQL table. When updating, keep entities in 3rd Normal Form.
@@ -45,7 +45,7 @@ export class Entity {
 		const id = this.getUniqueId();
 		animal.id = id;
 		this.animals.set(id, animal);
-		this.sprites.set(id, new Sprite(animalKindToSprite[animal.kind]));
+		this.sprites.set(id, new Sprite(sprite[animal.kind]));
 
 		return this.animals.get(id) as Animal;
 	};

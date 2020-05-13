@@ -92,7 +92,11 @@ export const BattleUi: FunctionComponent<Props> = ({
 							Hp {activeAnimal.hp} / Sp {activeAnimal.sp}
 						</Box>
 						<Box>
-							<img src={G.sprites.get(activeAnimal.id)?.url} height="160px" />
+							<img
+								src={G.sprites.get(activeAnimal.id)?.url}
+								height="160px"
+								alt="Your cute animal"
+							/>
 						</Box>
 					</Box>
 					<Box>
@@ -104,6 +108,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 								src={G.sprites.get(enemyAnimal.id)?.url}
 								height="160px"
 								style={{ transform: 'scaleX(-1)' }}
+								alt="Enemy animal"
 							/>
 						</Box>
 					</Box>
