@@ -1,7 +1,7 @@
 import * as mobileNet from '@tensorflow-models/mobilenet';
 import React, { FunctionComponent } from 'react';
 
-import { useVideoCapture } from './useVideoCapture';
+import { useVideoCapture } from '../ui/useVideoCapture';
 
 // Start model loading as soon as possible to reduce upfront cost.
 const mobileNetPromise = mobileNet.load();

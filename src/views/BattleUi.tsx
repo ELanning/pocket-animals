@@ -3,10 +3,10 @@
 import { Button } from '@material-ui/core';
 import React, { FunctionComponent } from 'react';
 
-import { assert } from './assert';
-import { Box, Flex, Grid } from './Box';
-import { Entity } from './Entity';
-import background from './images/background.png';
+import { assert } from '../debug/assert';
+import { Table } from '../entities/Table';
+import background from '../images/background.png';
+import { Box, Flex, Grid } from '../ui/Box';
 
 interface Moves {
 	melee: () => void;
@@ -16,7 +16,7 @@ interface Moves {
 }
 
 interface Props {
-	G: Entity;
+	G: Table;
 	ctx: any;
 	moves: Moves;
 	playerID: string; // ID comes from boardgame.io framework. Prefer "id" over "ID" in all other contexts.

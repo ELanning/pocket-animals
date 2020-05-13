@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 
-import { assert } from './assert';
+import { assert } from '../debug/assert';
 
 export function useVideoCapture() {
 	const videoRef = useRef<HTMLVideoElement>(null);

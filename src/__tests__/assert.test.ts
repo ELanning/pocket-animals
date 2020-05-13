@@ -1,4 +1,4 @@
-import { assert } from '../assert';
+import { assert } from '../debug/assert';
 
 it('properly serializes', () => {
 	// Could be many subtests, but would require more boilerplate, for diminishing returns.

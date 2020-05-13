@@ -2,29 +2,29 @@ import { Local } from 'boardgame.io/multiplayer';
 import { Client } from 'boardgame.io/react';
 import React, { FunctionComponent } from 'react';
 
-import { assert } from './assert';
+import { assert } from '../debug/assert';
+import { Table } from '../entities/Table';
+import { createBattleState } from '../game/createBattleState';
 import { BattleUi } from './BattleUi';
-import { createBattleState } from './createBattleState';
-import { Entity } from './Entity';
 
 interface Props {
 	currentUserId: string;
-	entity: Entity;
+	table: Table;
 }
 
 // Sets up the view and state of the game.
-export const Battle: FunctionComponent<Props> = ({ currentUserId, entity }: Props) => {
+export const Battle: FunctionComponent<Props> = ({ currentUserId, table }: Props) => {
 	// Warning: Game state data will not show up in debug panel,
 	// due to Sets and Maps not being serialized by boardgame.io's JSON.stringify call.
 	const BattleClient = Client({
-		game: createBattleState(entity),
+		game: createBattleState(table),
 		board: BattleUi,
 		numPlayers: 2,
 		multiplayer: Local()
 	});
 
-	const enemyId = entity.users.asArray().find(user => user.id !== currentUserId)?.id;
-	assert(enemyId, 'Game must have an enemy', entity);
+	const enemyId = table.users.asArray().find(user => user.id !== currentUserId)?.id;
+	assert(enemyId, 'Game must have an enemy', table);
 
 	return (
 		<>

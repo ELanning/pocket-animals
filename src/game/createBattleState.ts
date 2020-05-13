@@ -1,10 +1,9 @@
-import { Animal } from './Animal';
-import { assert } from './assert';
-import { Entity } from './Entity';
+import { assert } from '../debug/assert';
+import { Animal, Table } from '../entities';
 
 // Handles the model and controller part of the battle.
 // https://boardgame.io/documentation/#/
-export function createBattleState(setupData: Entity) {
+export function createBattleState(setupData: Table) {
 	return {
 		name: 'pocket-animals-battle',
 
@@ -15,7 +14,7 @@ export function createBattleState(setupData: Entity) {
 		},
 
 		moves: {
-			melee(G: Entity, ctx: any) {
+			melee(G: Table, ctx: any) {
 				const [attacker, defender] = getInPlayAnimals(G, ctx);
 				const damage = Math.floor(
 					attacker.level / 4 + attacker.str + attacker.dex / 5 + attacker.luk / 3
@@ -27,7 +26,7 @@ export function createBattleState(setupData: Entity) {
 				return G;
 			},
 
-			range(G: Entity, ctx: any) {
+			range(G: Table, ctx: any) {
 				const [attacker, defender] = getInPlayAnimals(G, ctx);
 				const damage = Math.floor(
 					attacker.level / 4 + attacker.str / 5 + attacker.dex + attacker.luk / 3
@@ -39,11 +38,11 @@ export function createBattleState(setupData: Entity) {
 				return G;
 			},
 
-			skill(G: Entity, ctx: any) {
+			skill(G: Table, ctx: any) {
 				return G;
 			},
 
-			swap(G: Entity, ctx: any) {
+			swap(G: Table, ctx: any) {
 				return G;
 			}
 		},
@@ -58,10 +57,10 @@ export function createBattleState(setupData: Entity) {
 				// Get the next value of playOrderPos.
 				// This is called at the end of each turn.
 				// The phase ends if this returns undefined.
-				next: (G: Entity, ctx: any) => (ctx.playOrderPos + 1) % ctx.numPlayers,
+				next: (G: Table, ctx: any) => (ctx.playOrderPos + 1) % ctx.numPlayers,
 
 				// This is called at the beginning of the game / phase.
-				playOrder: (G: Entity) => {
+				playOrder: (G: Table) => {
 					// Player with fastest animal goes first.
 					return [...G.inBattle]
 						.map(id => G.animals.get(id) as Animal)
@@ -87,7 +86,7 @@ export function createBattleState(setupData: Entity) {
 	};
 }
 
-function getInPlayAnimals(G: Entity, ctx: any) {
+function getInPlayAnimals(G: Table, ctx: any) {
 	const attacker = [...G.inBattle]
 		.map(id => G.animals.get(id) as Animal)
 		.find(animal => animal.userId === ctx.currentPlayer);

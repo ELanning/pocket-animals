@@ -1,14 +1,15 @@
-// Contains the global entities of the app.
-// Understand the design of this pattern before making changes:
-// https://www.dataorienteddesign.com/dodbook/node5.html
+/* Contains the global entities of the app.
+Understand the design of this pattern before making changes:
+https://www.dataorienteddesign.com/dodbook/node5.html */
+import { assert } from '../debug/assert';
+import { ExtendedMap } from '../extensions';
+import { sprite } from '../game/tables/sprite';
 import { Animal } from './Animal';
-import { assert } from './assert';
 import { Sprite } from './Sprite';
-import { sprite } from './tables/sprite';
 import { User } from './User';
 
 // Treat Entities as a SQL table. When updating, keep entities in 3rd Normal Form.
-export class Entity {
+export class Table {
 	users: ExtendedMap<User>;
 	animals: ExtendedMap<Animal>;
 	sprites: ExtendedMap<Sprite>;
@@ -58,23 +59,6 @@ export class Entity {
 	[Symbol.iterator] = () => {
 		// Log instead of throw.
 		// Throwing causes issues with React debug tools.
-		console.error('Do not iterate on Entity. Prefer mutation.');
-	};
-}
-
-// Key-value map, with convenience functions.
-class ExtendedMap<V> extends Map<string, V> {
-	asArray = () => {
-		return [...this.values()];
-	};
-
-	asIdArray = () => {
-		return [...this.keys()];
-	};
-
-	asIdSet = () => new Set(this.asIdArray());
-
-	[Symbol.iterator] = () => {
-		return this.entries();
+		console.error('Do not iterate on Table. Prefer mutation.');
 	};
 }
