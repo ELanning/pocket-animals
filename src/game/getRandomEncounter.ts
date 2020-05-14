@@ -1,7 +1,7 @@
 import { Animal } from '../entities/Animal';
 import { sample } from '../extensions/array';
-import { getStatCost } from './levels/getStatCost';
-import { totalStatPoints } from './levels/totalStatPoints';
+import { getMaxHp, getMaxSp } from './getMax';
+import { getStatCost, totalStatPoints } from './levels';
 
 export interface Stats {
 	str: number;
@@ -13,7 +13,7 @@ export interface Stats {
 }
 
 // Generates a random animal stat spread for a given level.
-export function getRandomEncounter(level: number) {
+export function getRandomEncounter(userId: string, kind: string, level: number) {
 	let availablePoints = totalStatPoints[level];
 	const stats: Stats = {
 		str: 1,
@@ -24,20 +24,20 @@ export function getRandomEncounter(level: number) {
 		luk: 1
 	};
 
-	const options = getOptions(availablePoints, stats);
-	while (options.length) {
+	let options: string[];
+	do {
+		options = getOptions(availablePoints, stats);
 		const option = sample(options);
 		availablePoints -= getStatCost((stats as any)[option]);
 		(stats as any)[option] += 1;
-	}
+	} while (options.length);
 
-	// TODO.
-	const maxHp = 0;
-	const maxSp = 0;
+	const maxHp = getMaxHp({ level, vit: stats.vit });
+	const maxSp = getMaxSp({ level, int: stats.int });
 
 	return new Animal(
-		'-1',
-		'',
+		userId,
+		kind,
 		level,
 		0,
 		0,
@@ -52,7 +52,7 @@ export function getRandomEncounter(level: number) {
 	);
 }
 
-function getOptions(points: number, stats: Stats) {
+export function getOptions(points: number, stats: Stats) {
 	const options = [];
 	if (checkIsOption(points, stats.str)) options.push('str');
 	if (checkIsOption(points, stats.agi)) options.push('agi');

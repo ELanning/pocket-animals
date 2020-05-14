@@ -1,6 +1,7 @@
 // Key-value map, with convenience functions.
 export class ExtendedMap<V> extends Map<string, V> {
 	asArray = () => {
+		// Should arguably be this.entries(), but this.values() has had more practical value.
 		return [...this.values()];
 	};
 

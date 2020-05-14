@@ -15,25 +15,23 @@ export function createBattleState(setupData: Table) {
 
 		moves: {
 			melee(G: Table, ctx: any) {
-				const [attacker, defender] = getInPlayAnimals(G, ctx);
-				const damage = Math.floor(
-					attacker.level / 4 + attacker.str + attacker.dex / 5 + attacker.luk / 3
-				);
+				const { attacker, defender } = getInPlayAnimals(G, ctx);
+				const damage = getMeleeDamage(attacker);
+				const reduction = getDamageReduction(defender.vit);
+				const totalDamage = getTotalDamage(damage, reduction);
 
-				assert(Number.isFinite(damage), 'damage must be a finite number.', damage);
-				defender.hp -= damage;
+				defender.hp -= totalDamage;
 
 				return G;
 			},
 
 			range(G: Table, ctx: any) {
-				const [attacker, defender] = getInPlayAnimals(G, ctx);
-				const damage = Math.floor(
-					attacker.level / 4 + attacker.str / 5 + attacker.dex + attacker.luk / 3
-				);
+				const { attacker, defender } = getInPlayAnimals(G, ctx);
+				const damage = getRangeDamage(attacker);
+				const reduction = getDamageReduction(defender.vit);
+				const totalDamage = getTotalDamage(damage, reduction);
 
-				assert(Number.isFinite(damage), 'damage must be a finite number.', damage);
-				defender.hp -= damage;
+				defender.hp -= totalDamage;
 
 				return G;
 			},
@@ -97,5 +95,31 @@ function getInPlayAnimals(G: Table, ctx: any) {
 		.find(animal => animal.userId !== ctx.currentPlayer);
 	assert(defender, 'defender must exist.', G, ctx);
 
-	return [attacker, defender];
+	return { attacker, defender };
+}
+
+function getMeleeDamage(animal: Animal) {
+	const damage = Math.floor(animal.level / 4 + animal.str + animal.dex / 5 + animal.luk / 3);
+	assert(Number.isFinite(damage), 'damage must be a finite number.', damage);
+	return damage;
+}
+
+function getRangeDamage(animal: Animal) {
+	const damage = Math.floor(animal.level / 4 + animal.str / 5 + animal.dex + animal.luk / 3);
+	assert(Number.isFinite(damage), 'damage must be a finite number.', damage);
+	return damage;
+}
+
+function getDamageReduction(vit: number) {
+	const damageReduction = vit / 2 + Math.max(vit * 0.3, Math.pow(vit, 2) / 150);
+	assert(
+		Number.isFinite(damageReduction),
+		'damageReduction must be a finite number',
+		damageReduction
+	);
+	return damageReduction;
+}
+
+function getTotalDamage(damage: number, damageReduction: number) {
+	return Math.floor(damage - damageReduction);
 }
