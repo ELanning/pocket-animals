@@ -1,7 +1,7 @@
 /* Contains the global entities of the app.
 Understand the design of this pattern before making changes:
 https://www.dataorienteddesign.com/dodbook/node5.html */
-import { assert } from '../debug/assert';
+import { assert } from '../debug';
 import { ExtendedMap } from '../extensions';
 import { sprite } from '../game/tables/sprite';
 import { Animal } from './Animal';
@@ -56,9 +56,14 @@ export class Table {
 		return (this.#uuid++).toString();
 	};
 
+	// Hack so React dev tools work.
 	[Symbol.iterator] = () => {
-		// Log instead of throw.
-		// Throwing causes issues with React debug tools.
-		console.error('Do not iterate on Table. Prefer mutation.');
+		console.warn('Only iterate on Table for debug purposes.');
+
+		function* iter(users: any, animals: any, sprites: any, inBattle: any, uuid: any) {
+			yield* [{ users }, { animals }, { sprites }, { inBattle }, { uuid }];
+		}
+
+		return iter(this.users, this.animals, this.sprites, this.inBattle, this.#uuid);
 	};
 }

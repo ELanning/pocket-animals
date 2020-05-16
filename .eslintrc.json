@@ -64,6 +64,8 @@
 		"promise/catch-or-return": "off",
 		"promise/always-return": "off",
 		"promise/no-nesting": "off",
+		"unicorn/no-fn-reference-in-iterator": "off",
+		"unicorn/consistent-function-scoping": "off",
 		"unicorn/no-null": "warn",
 		"unicorn/prevent-abbreviations": "off",
 		"unicorn/filename-case": [

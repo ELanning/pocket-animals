@@ -1,4 +1,4 @@
-import { assert } from '../debug/assert';
+import { assert, log } from '../debug';
 import { Animal, Table } from '../entities';
 
 // Handles the model and controller part of the battle.
@@ -16,22 +16,20 @@ export function createBattleState(setupData: Table) {
 		moves: {
 			melee(G: Table, ctx: any) {
 				const { attacker, defender } = getInPlayAnimals(G, ctx);
-				const damage = getMeleeDamage(attacker);
-				const reduction = getDamageReduction(defender.vit);
-				const totalDamage = getTotalDamage(damage, reduction);
 
-				defender.hp -= totalDamage;
+				const damage = getMeleeDamage(attacker);
+				const turnDamage = getTurnDamage(attacker, defender, damage);
+				defender.hp -= turnDamage;
 
 				return G;
 			},
 
 			range(G: Table, ctx: any) {
 				const { attacker, defender } = getInPlayAnimals(G, ctx);
-				const damage = getRangeDamage(attacker);
-				const reduction = getDamageReduction(defender.vit);
-				const totalDamage = getTotalDamage(damage, reduction);
 
-				defender.hp -= totalDamage;
+				const damage = getRangeDamage(attacker);
+				const turnDamage = getTurnDamage(attacker, defender, damage);
+				defender.hp -= turnDamage;
 
 				return G;
 			},
@@ -98,28 +96,63 @@ function getInPlayAnimals(G: Table, ctx: any) {
 	return { attacker, defender };
 }
 
+function getTurnDamage(attacker: Animal, defender: Animal, damage: number) {
+	const reduction = getDamageReduction(defender.vit);
+	const critDamageModifier = getCritModifier(attacker, defender);
+	const totalDamage = getTotalDamage(damage, reduction, critDamageModifier);
+
+	const accuracy = getAccuracy(attacker);
+	const dodge = getDodge(defender);
+	const didHit = checkDidHit(accuracy, dodge);
+
+	return didHit ? totalDamage : 0;
+}
+
 function getMeleeDamage(animal: Animal) {
-	const damage = Math.floor(animal.level / 4 + animal.str + animal.dex / 5 + animal.luk / 3);
-	assert(Number.isFinite(damage), 'damage must be a finite number.', damage);
-	return damage;
+	const meleeDamage = Math.floor(animal.level / 4 + animal.str + animal.dex / 3 + animal.luk / 2);
+	log('melee damage: ', meleeDamage);
+	return meleeDamage;
 }
 
 function getRangeDamage(animal: Animal) {
-	const damage = Math.floor(animal.level / 4 + animal.str / 5 + animal.dex + animal.luk / 3);
-	assert(Number.isFinite(damage), 'damage must be a finite number.', damage);
-	return damage;
+	const rangeDamage = Math.floor(animal.level / 4 + animal.str / 3 + animal.dex + animal.luk / 2);
+	log('range damage: ', rangeDamage);
+	return rangeDamage;
 }
 
 function getDamageReduction(vit: number) {
 	const damageReduction = vit / 2 + Math.max(vit * 0.3, Math.pow(vit, 2) / 150);
-	assert(
-		Number.isFinite(damageReduction),
-		'damageReduction must be a finite number',
-		damageReduction
-	);
+	log('damage reduction: ', damageReduction);
 	return damageReduction;
 }
 
-function getTotalDamage(damage: number, damageReduction: number) {
-	return Math.floor(damage - damageReduction);
+function getCritModifier(attacker: Animal, defender: Animal) {
+	const critHitRate = attacker.luk * 0.3;
+	const critDefense = defender.luk * 0.2;
+	log('crit hit rate: ', critHitRate);
+	log('crit defense: ', critDefense);
+	return (critHitRate - critDefense) / 100 > Math.random() ? 1.4 : 1;
+}
+
+function getTotalDamage(damage: number, damageReduction: number, totalModifier: number) {
+	const totalDamage = Math.floor(totalModifier * (damage - damageReduction));
+	log('total damage: ', totalDamage);
+	return totalDamage;
+}
+
+function getAccuracy(animal: Animal) {
+	const accuracy = 175 + animal.level + animal.dex + Math.floor(animal.luk * 0.333);
+	log('accuracy: ', accuracy);
+	return accuracy;
+}
+
+function getDodge(animal: Animal) {
+	const dodge =
+		100 + animal.level + animal.agi + Math.floor(animal.luk * 0.2) + (1 + animal.luk * 0.1);
+	log('dodge: ', dodge);
+	return dodge;
+}
+
+function checkDidHit(accuracy: number, dodge: number) {
+	return (accuracy - dodge) / 100 > Math.random();
 }
