@@ -74,17 +74,17 @@ export const BattleUi: FunctionComponent<Props> = ({
 					</Box>
 				</Flex>
 				<Flex justifyContent="space-between" top="55%" position="absolute" width="100%">
-					<Box paddingRight="35%">
+					<Box alignSelf="flex-end" paddingRight="35%">
 						<AnimalSprite
 							src={G.sprites.get(activeAnimal.id)?.url}
 							alt="Your cute animal"
 						/>
 					</Box>
-					<Box>
+					<Box alignSelf="flex-end">
 						<AnimalSprite
 							src={G.sprites.get(enemyAnimal.id)?.url}
 							alt="Enemy animal"
-							transform="scaleX(-1)"
+							transform="scaleX(-1)" // Flip the image.
 						/>
 					</Box>
 				</Flex>
