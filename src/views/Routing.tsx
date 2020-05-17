@@ -47,10 +47,5 @@ export const Routing: FunctionComponent<Props> = ({ currentUserId, table }) => {
 
 	assert(currentUser, 'Current user must be set.', currentUserId, table);
 
-	return (
-		<>
-			<div>{currentUser.name}</div>
-			{viewComponent}
-		</>
-	);
+	return <>{viewComponent}</>;
 };

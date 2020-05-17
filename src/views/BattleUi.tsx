@@ -3,9 +3,9 @@
 import { Button } from '@material-ui/core';
 import React, { FunctionComponent } from 'react';
 
+import background from '../assets/images/background.png';
 import { assert } from '../debug/assert';
 import { Table } from '../entities/Table';
-import background from '../images/background.png';
 import { Box, Flex, Grid } from '../ui/Box';
 
 interface Moves {
@@ -48,72 +48,116 @@ export const BattleUi: FunctionComponent<Props> = ({
 	const enemyAnimal = G.animals.get(enemyId as string);
 	assert(enemyAnimal?.id, 'Battle must have an enemy.', G, ctx);
 
+	// See second post: https://stackoverflow.com/questions/600743/how-to-get-div-height-to-auto-adjust-to-background-size
+	// On why background values are the way they are.
 	return (
-		<Box
-			backgroundImage={`url(${background})`}
-			backgroundSize="cover"
-			backgroundRepeat="no-repeat"
-			minHeight="100vh"
-			maxWidth="1000px"
-			position="relative"
-		>
-			<Grid
-				gridTemplateColumns="repeat(2, 1fr)"
-				gridTemplateRows="repeat(2, 1fr)"
-				gridColumnGap="0px"
-				gridRowGap="16px"
-				maxWidth="200px"
+		<Box>
+			<Box
+				backgroundImage={`url(${background})`}
+				backgroundSize="cover"
+				backgroundRepeat="no-repeat"
+				width="100%"
+				height="0"
+				paddingTop="79.8%"
+				position="relative"
 			>
-				<Box>
-					<Button variant="contained" color="primary" onClick={moves.melee}>
-						Melee
-					</Button>
-				</Box>
-				<Box>
-					<Button variant="contained" color="primary" onClick={moves.range}>
-						Range
-					</Button>
-				</Box>
-				<Box>
-					<Button variant="contained" color="primary" onClick={moves.skill}>
-						Skill
-					</Button>
-				</Box>
-				<Box>
-					<Button variant="contained" color="primary" onClick={moves.swap}>
-						Swap
-					</Button>
-				</Box>
-			</Grid>
-			<Box position="absolute" bottom="0px" width="100%">
-				<Flex justifyContent="space-between" maxWidth="784px">
+				<Flex justifyContent="space-between" top="0" position="absolute" width="100%">
 					<Box>
-						<Box>
-							Hp {activeAnimal.hp} / Sp {activeAnimal.sp}
-						</Box>
-						<Box>
-							<img
-								src={G.sprites.get(activeAnimal.id)?.url}
-								height="160px"
-								alt="Your cute animal"
-							/>
-						</Box>
+						Hp: {activeAnimal.hp}
+						<br />
+						Sp: {activeAnimal.sp}
 					</Box>
 					<Box>
-						<Box>
-							Hp {enemyAnimal.hp} / Sp {enemyAnimal.sp}
-						</Box>
-						<Box>
-							<img
-								src={G.sprites.get(enemyAnimal.id)?.url}
-								height="160px"
-								style={{ transform: 'scaleX(-1)' }}
-								alt="Enemy animal"
-							/>
-						</Box>
+						Hp: {enemyAnimal.hp}
+						<br />
+						Sp: {enemyAnimal.sp}
+					</Box>
+				</Flex>
+				<Flex justifyContent="space-between" top="55%" position="absolute" width="100%">
+					<Box paddingRight="35%">
+						<AnimalSprite
+							src={G.sprites.get(activeAnimal.id)?.url}
+							alt="Your cute animal"
+						/>
+					</Box>
+					<Box>
+						<AnimalSprite
+							src={G.sprites.get(enemyAnimal.id)?.url}
+							alt="Enemy animal"
+							transform="scaleX(-1)"
+						/>
 					</Box>
 				</Flex>
 			</Box>
+			<MovePanel
+				disabled={!isActive}
+				onMelee={moves.melee}
+				onRange={moves.range}
+				onSkill={moves.skill}
+				onSwap={moves.swap}
+			/>
 		</Box>
 	);
 };
+
+function AnimalSprite({ src, alt, transform }: { src?: string; alt: string; transform?: string }) {
+	return (
+		<img
+			src={src}
+			style={{
+				display: 'block',
+				maxWidth: '100%',
+				maxHeight: '100%',
+				width: 'auto',
+				height: 'auto',
+				transform
+			}}
+			alt={alt}
+		/>
+	);
+}
+
+function MovePanel({
+	disabled,
+	onMelee,
+	onRange,
+	onSkill,
+	onSwap
+}: {
+	disabled?: boolean;
+	onMelee?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+	onRange?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+	onSkill?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+	onSwap?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}) {
+	return (
+		<Grid
+			gridTemplateColumns="repeat(2, 1fr)"
+			gridTemplateRows="repeat(2, 1fr)"
+			gridColumnGap="0px"
+			gridRowGap="16px"
+			maxWidth="200px"
+		>
+			<Box>
+				<Button variant="contained" color="primary" onClick={onMelee} disabled={disabled}>
+					Melee
+				</Button>
+			</Box>
+			<Box>
+				<Button variant="contained" color="primary" onClick={onRange} disabled={disabled}>
+					Range
+				</Button>
+			</Box>
+			<Box>
+				<Button variant="contained" color="primary" onClick={onSkill} disabled={disabled}>
+					Skill
+				</Button>
+			</Box>
+			<Box>
+				<Button variant="contained" color="primary" onClick={onSwap} disabled={disabled}>
+					Swap
+				</Button>
+			</Box>
+		</Grid>
+	);
+}

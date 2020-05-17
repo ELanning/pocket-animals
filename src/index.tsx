@@ -17,7 +17,7 @@ const level = 50;
 const statSpread = getRandomStatSpread(level);
 table.createAnimal({
 	userId: exampleUserId,
-	kind: 'duck',
+	kind: 'goose',
 	level: level,
 	skillPoints: 0,
 	statPoints: 0,

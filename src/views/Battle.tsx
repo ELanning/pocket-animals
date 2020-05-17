@@ -20,7 +20,8 @@ export const Battle: FunctionComponent<Props> = ({ currentUserId, table }: Props
 		game: createBattleState(table),
 		board: BattleUi,
 		numPlayers: 2,
-		multiplayer: Local()
+		multiplayer: Local(),
+		debug: false
 	});
 
 	const enemyId = table.users.asArray().find(user => user.id !== currentUserId)?.id;
