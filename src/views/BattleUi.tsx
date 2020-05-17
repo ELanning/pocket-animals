@@ -51,14 +51,14 @@ export const BattleUi: FunctionComponent<Props> = ({
 	// See second post: https://stackoverflow.com/questions/600743/how-to-get-div-height-to-auto-adjust-to-background-size
 	// On why background values are the way they are.
 	return (
-		<Box>
+		<Flex flexDirection="column" height="100vh">
 			<Box
 				backgroundImage={`url(${background})`}
 				backgroundSize="cover"
 				backgroundRepeat="no-repeat"
 				width="100%"
 				height="0"
-				paddingTop="79.8%"
+				paddingTop="60vh"
 				position="relative"
 			>
 				<Flex justifyContent="space-between" top="0" position="absolute" width="100%">
@@ -96,7 +96,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 				onSkill={moves.skill}
 				onSwap={moves.swap}
 			/>
-		</Box>
+		</Flex>
 	);
 };
 
@@ -131,33 +131,51 @@ function MovePanel({
 	onSwap?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }) {
 	return (
-		<Grid
-			gridTemplateColumns="repeat(2, 1fr)"
-			gridTemplateRows="repeat(2, 1fr)"
-			gridColumnGap="0px"
-			gridRowGap="16px"
-			maxWidth="200px"
+		<Box
+			borderColor="black"
+			borderStyle="solid"
+			borderRadius="2px"
+			borderWidth="7px"
+			height="100%"
 		>
-			<Box>
-				<Button variant="contained" color="primary" onClick={onMelee} disabled={disabled}>
-					Melee
-				</Button>
-			</Box>
-			<Box>
-				<Button variant="contained" color="primary" onClick={onRange} disabled={disabled}>
-					Range
-				</Button>
-			</Box>
-			<Box>
-				<Button variant="contained" color="primary" onClick={onSkill} disabled={disabled}>
-					Skill
-				</Button>
-			</Box>
-			<Box>
-				<Button variant="contained" color="primary" onClick={onSwap} disabled={disabled}>
-					Swap
-				</Button>
-			</Box>
-		</Grid>
+			<Grid
+				gridTemplateColumns="1fr"
+				gridTemplateRows="repeat(3, 1fr)"
+				gridColumnGap="0px"
+				gridRowGap="16px"
+				maxWidth="200px"
+			>
+				<Box>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={onMelee}
+						disabled={disabled}
+					>
+						Melee
+					</Button>
+				</Box>
+				<Box>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={onRange}
+						disabled={disabled}
+					>
+						Range
+					</Button>
+				</Box>
+				<Box>
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={onSkill}
+						disabled={disabled}
+					>
+						Skill
+					</Button>
+				</Box>
+			</Grid>
+		</Box>
 	);
 }
