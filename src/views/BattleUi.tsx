@@ -6,6 +6,7 @@ import React, { FunctionComponent } from 'react';
 import background from '../assets/images/background.png';
 import { assert } from '../debug/assert';
 import { Animal, Sprite, Table } from '../entities';
+import { getMaxHp, getMaxSp } from '../game';
 import { Box, Flex, Grid } from '../ui/Box';
 
 interface Moves {
@@ -56,6 +57,10 @@ export const BattleUi: FunctionComponent<Props> = ({
 	const enemyAnimal = G.animals.get(enemyId as string);
 	assert(enemyAnimal?.id, 'Battle must have an enemy.', G, ctx);
 
+	if (ctx.gameover) {
+		return <div>Winner: {ctx.gameover.winner}</div>;
+	}
+
 	// See second post: https://stackoverflow.com/questions/600743/how-to-get-div-height-to-auto-adjust-to-background-size
 	// On why background values are the way they are.
 	return (
@@ -69,31 +74,37 @@ export const BattleUi: FunctionComponent<Props> = ({
 				paddingTop="60vh"
 				position="relative"
 			>
-				<Flex justifyContent="space-between" top="0" position="absolute" width="100%">
-					<Box>
-						Hp: {activeAnimal.hp}
-						<br />
-						Sp: {activeAnimal.sp}
-					</Box>
-					<Box>
-						Hp: {enemyAnimal.hp}
-						<br />
-						Sp: {enemyAnimal.sp}
-					</Box>
-				</Flex>
-				<Flex top="22%" position="absolute" height="208px">
+				<Flex
+					top="22%"
+					position="absolute"
+					height="208px"
+					paddingLeft="4px"
+					paddingRight="4px"
+				>
 					<Box alignSelf="flex-end" paddingRight="35%">
 						<AnimalSprite
 							src={G.sprites.get(activeAnimal.id)?.url}
 							alt="Your cute animal"
+							margin="0 0 4px 0"
 						/>
+						<Box>
+							Hp: {activeAnimal.hp} / {getMaxHp(activeAnimal.level, activeAnimal.vit)}
+							<br />
+							Sp: {activeAnimal.sp} / {getMaxSp(activeAnimal.level, activeAnimal.int)}
+						</Box>
 					</Box>
 					<Box alignSelf="flex-end">
 						<AnimalSprite
 							src={G.sprites.get(enemyAnimal.id)?.url}
 							alt="Enemy animal"
 							transform="scaleX(-1)" // Flip the image.
+							margin="0 0 4px 0"
 						/>
+						<Box>
+							Hp: {enemyAnimal.hp} / {getMaxHp(enemyAnimal.level, enemyAnimal.vit)}
+							<br />
+							Sp: {enemyAnimal.sp} / {getMaxSp(enemyAnimal.level, enemyAnimal.int)}
+						</Box>
 					</Box>
 				</Flex>
 			</Box>
@@ -109,19 +120,19 @@ export const BattleUi: FunctionComponent<Props> = ({
 	);
 };
 
-function AnimalSprite({ src, alt, transform }: { src?: string; alt: string; transform?: string }) {
+function AnimalSprite({ src, alt, ...rest }: any) {
 	return (
 		<img
 			src={src}
+			alt={alt}
 			style={{
 				display: 'block',
 				maxWidth: '100%',
 				maxHeight: '100%',
 				width: 'auto',
 				height: 'auto',
-				transform
+				...rest
 			}}
-			alt={alt}
 		/>
 	);
 }
@@ -192,7 +203,9 @@ function MovePanel({
 				{swapOptions.map(option => (
 					<Flex
 						key={option[0].id}
-						onClick={() => onSwap && onSwap(option[0].id as string)}
+						onClick={() => {
+							if (onSwap && option[0].hp > 0) onSwap(option[0].id as string);
+						}}
 					>
 						<img
 							src={option[1].url}
@@ -202,9 +215,9 @@ function MovePanel({
 							style={{ paddingRight: '8px' }}
 						/>
 						<Box>
-							Hp: {option[0].hp}
+							Hp: {option[0].hp} / {getMaxHp(option[0].level, option[0].vit)}
 							<br />
-							Sp: {option[0].sp}
+							Sp: {option[0].sp} / {getMaxSp(option[0].level, option[0].int)}
 						</Box>
 					</Flex>
 				))}

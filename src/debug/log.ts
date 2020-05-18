@@ -1,6 +1,6 @@
 import { serialize } from './serialize';
 
-const isDebug = true;
+const isDebug = false;
 
 export function log(message: string, ...args: any) {
 	if (!isDebug) return;

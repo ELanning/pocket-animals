@@ -40,9 +40,17 @@ export function createBattleState(setupData: Table) {
 
 			swap(G: Table, ctx: any, swappedAnimalId: string) {
 				const animals = G.getUsersAnimals(ctx.currentPlayer);
+				const swappedAnimal = animals.find(animal => animal.id === swappedAnimalId);
 				assert(
-					animals.find(animal => animal.id === swappedAnimalId),
+					swappedAnimal,
 					"swappedAnimalId must be associated to animal in current player's animals.",
+					G,
+					ctx,
+					swappedAnimalId
+				);
+				assert(
+					swappedAnimal.hp > 0,
+					'Swapped in animal must not be fainted.',
 					G,
 					ctx,
 					swappedAnimalId
@@ -85,8 +93,14 @@ export function createBattleState(setupData: Table) {
 			}
 		},
 
-		endIf: () => {
-			return;
+		endIf: (G: Table, ctx: any) => {
+			const enemyAnimals = G.getUsersAnimals(ctx.currentPlayer);
+			const faintedAnimals = enemyAnimals.filter(animal => animal.hp <= 0);
+			const isVictory = enemyAnimals.length === faintedAnimals.length;
+
+			if (isVictory) {
+				return { winner: ctx.currentPlayer };
+			}
 		},
 
 		ai: {
