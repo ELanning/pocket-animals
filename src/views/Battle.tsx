@@ -30,9 +30,5 @@ export const Battle: FunctionComponent<Props> = ({ currentUserId, table }: Props
 		debug: false
 	});
 
-	return (
-		<>
-			<BattleClient gameID="single" playerID={currentUserId.toString()} />
-		</>
-	);
+	return <BattleClient gameID="single" playerID={currentUserId.toString()} />;
 };
