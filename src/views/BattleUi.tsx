@@ -81,13 +81,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 						Sp: {enemyAnimal.sp}
 					</Box>
 				</Flex>
-				<Flex
-					justifyContent="space-between"
-					top="22%"
-					position="absolute"
-					width="100%"
-					height="208px"
-				>
+				<Flex top="22%" position="absolute" height="208px">
 					<Box alignSelf="flex-end" paddingRight="35%">
 						<AnimalSprite
 							src={G.sprites.get(activeAnimal.id)?.url}
