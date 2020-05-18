@@ -14,6 +14,7 @@ export class Table {
 	animals: ExtendedMap<Animal>;
 	sprites: ExtendedMap<Sprite>;
 	inBattle: Set<string>;
+	benched: Set<string>;
 	#uuid: number;
 
 	constructor() {
@@ -21,6 +22,7 @@ export class Table {
 		this.animals = new ExtendedMap<Animal>();
 		this.sprites = new ExtendedMap<Sprite>();
 		this.inBattle = new Set<string>();
+		this.benched = new Set<string>();
 		this.#uuid = 0;
 	}
 

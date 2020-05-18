@@ -5,7 +5,7 @@ import React, { FunctionComponent } from 'react';
 
 import background from '../assets/images/background.png';
 import { assert } from '../debug/assert';
-import { Table } from '../entities/Table';
+import { Animal, Sprite, Table } from '../entities';
 import { Box, Flex, Grid } from '../ui/Box';
 
 interface Moves {
@@ -41,6 +41,14 @@ export const BattleUi: FunctionComponent<Props> = ({
 	assert(usersAnimals.length, 'User must have one or more animals.', G, ctx, playerID);
 	const activeAnimal = usersAnimals.find(animal => G.inBattle.has(animal.id as string));
 	assert(activeAnimal?.id, 'User must have an in-battle animal', G, ctx);
+
+	const benchedAnimals = usersAnimals.filter(animal => G.benched.has(animal.id as string));
+	const swapOptions = benchedAnimals.map(benched => {
+		assert(benched.id);
+		const sprite = G.sprites.get(benched.id);
+		assert(sprite);
+		return [benched, sprite] as [Animal, Sprite];
+	});
 
 	// Get enemy.
 	const enemyId = [...G.inBattle].find(id => id !== activeAnimal.id);
@@ -95,6 +103,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 				onRange={moves.range}
 				onSkill={moves.skill}
 				onSwap={moves.swap}
+				swapOptions={swapOptions}
 			/>
 		</Flex>
 	);
@@ -122,28 +131,31 @@ function MovePanel({
 	onMelee,
 	onRange,
 	onSkill,
-	onSwap
+	onSwap,
+	swapOptions
 }: {
 	disabled?: boolean;
-	onMelee?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-	onRange?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-	onSkill?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-	onSwap?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+	onMelee?: () => void;
+	onRange?: () => void;
+	onSkill?: () => void;
+	onSwap?: (animalId: string) => void;
+	swapOptions: [Animal, Sprite][];
 }) {
 	return (
-		<Box
+		<Flex
 			borderColor="black"
 			borderStyle="solid"
 			borderRadius="2px"
 			borderWidth="7px"
 			height="100%"
+			padding="6%"
 		>
 			<Grid
 				gridTemplateColumns="1fr"
 				gridTemplateRows="repeat(3, 1fr)"
 				gridColumnGap="0px"
 				gridRowGap="16px"
-				maxWidth="200px"
+				flexGrow="1"
 			>
 				<Box>
 					<Button
@@ -176,6 +188,27 @@ function MovePanel({
 					</Button>
 				</Box>
 			</Grid>
-		</Box>
+			<Grid gridTemplateColumns="1fr" gridColumnGap="0px">
+				{swapOptions.map(option => (
+					<Flex
+						key={option[0].id}
+						onClick={() => onSwap && onSwap(option[0].id as string)}
+					>
+						<img
+							src={option[1].url}
+							alt="Benched animal"
+							height="40px"
+							width="40px"
+							style={{ paddingRight: '8px' }}
+						/>
+						<Box>
+							Hp: {option[0].hp}
+							<br />
+							Sp: {option[0].sp}
+						</Box>
+					</Flex>
+				))}
+			</Grid>
+		</Flex>
 	);
 }
