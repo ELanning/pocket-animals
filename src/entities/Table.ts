@@ -15,7 +15,7 @@ export class Table {
 	sprites: ExtendedMap<Sprite>;
 	inBattle: Set<string>;
 	benched: Set<string>;
-	#uuid: number;
+	uuid: number;
 
 	constructor() {
 		this.users = new ExtendedMap<User>();
@@ -23,7 +23,7 @@ export class Table {
 		this.sprites = new ExtendedMap<Sprite>();
 		this.inBattle = new Set<string>();
 		this.benched = new Set<string>();
-		this.#uuid = 0;
+		this.uuid = 0;
 	}
 
 	public getUsersAnimals = (userId: string) => {
@@ -53,19 +53,39 @@ export class Table {
 		return this.animals.get(id) as Animal;
 	};
 
+	// Returns a deep copy of the Table.
+	// Less efficient than the standard {...foo, bar: {...}} copy method, but more convenient.
+	public clone = () => {
+		const cloned = new Table();
+		cloned.users = new ExtendedMap<User>(
+			this.users.asArray().map(user => [user.id as string, user.clone()])
+		);
+		cloned.animals = new ExtendedMap<Animal>(
+			this.animals.asArray().map(animal => [animal.id as string, animal.clone()])
+		);
+		cloned.sprites = new ExtendedMap<Sprite>(
+			this.sprites.asEntryArray().map(([id, sprite]) => [id, sprite.clone()])
+		);
+		cloned.inBattle = new Set<string>(this.inBattle);
+		cloned.benched = new Set<string>(this.benched);
+		cloned.uuid = this.uuid;
+
+		return cloned;
+	};
+
 	private getUniqueId = () => {
 		// (Will likely be a GUID when backend is implemented.)
-		return (this.#uuid++).toString();
+		return (this.uuid++).toString();
 	};
 
 	// Hack so React dev tools work.
 	[Symbol.iterator] = () => {
-		console.warn('Only iterate on Table for debug purposes.');
+		console.warn('Only iterate on Table for debug purposes. Use clone for a deep copy.');
 
 		function* iter(users: any, animals: any, sprites: any, inBattle: any, uuid: any) {
 			yield* [{ users }, { animals }, { sprites }, { inBattle }, { uuid }];
 		}
 
-		return iter(this.users, this.animals, this.sprites, this.inBattle, this.#uuid);
+		return iter(this.users, this.animals, this.sprites, this.inBattle, this.uuid);
 	};
 }

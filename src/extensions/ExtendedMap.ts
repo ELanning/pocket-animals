@@ -5,6 +5,10 @@ export class ExtendedMap<V> extends Map<string, V> {
 		return [...this.values()];
 	};
 
+	asEntryArray = () => {
+		return [...this.entries()];
+	};
+
 	asIdArray = () => {
 		return [...this.keys()];
 	};

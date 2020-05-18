@@ -30,4 +30,23 @@ export class Animal {
 		assert(Number.isInteger(dex), '', dex);
 		assert(Number.isInteger(luk), '', luk);
 	}
+
+	clone = () => {
+		return new Animal(
+			this.userId,
+			this.kind,
+			this.level,
+			this.statPoints,
+			this.skillPoints,
+			this.hp,
+			this.sp,
+			this.str,
+			this.agi,
+			this.vit,
+			this.int,
+			this.dex,
+			this.luk,
+			this.id
+		);
+	};
 }

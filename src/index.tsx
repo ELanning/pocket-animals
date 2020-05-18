@@ -4,7 +4,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { assert } from './debug';
-import { Table, User } from './entities';
+import { Animal, Table, User } from './entities';
 import { getRandomStatSpread } from './game';
 import * as serviceWorker from './serviceWorker';
 import { Routing } from './views';
@@ -27,7 +27,7 @@ table.benched.add(animal2.id as string);
 table.benched.add(animal3.id as string);
 
 // Create enemy data.
-const dummyUserId = table.createUser({ name: '' }).id as string;
+const dummyUserId = table.createUser(new User('')).id as string;
 const enemyLevel = 50;
 const enemyAnimal = createRandomAnimal(enemyLevel, dummyUserId, 'alligator');
 assert(enemyAnimal.id);
@@ -37,21 +37,23 @@ table.inBattle.add(enemyAnimal.id);
 
 function createRandomAnimal(level: number, userId: string, animalKind: string) {
 	const statSpread = getRandomStatSpread(level);
-	return table.createAnimal({
-		userId,
-		kind: animalKind,
-		level: level,
-		skillPoints: 0,
-		statPoints: 0,
-		hp: statSpread.maxHp,
-		sp: statSpread.maxSp,
-		str: statSpread.str,
-		agi: statSpread.agi,
-		vit: statSpread.vit,
-		int: statSpread.int,
-		dex: statSpread.dex,
-		luk: statSpread.luk
-	});
+	return table.createAnimal(
+		new Animal(
+			userId,
+			animalKind,
+			level,
+			0,
+			0,
+			statSpread.maxHp,
+			statSpread.maxSp,
+			statSpread.str,
+			statSpread.agi,
+			statSpread.vit,
+			statSpread.int,
+			statSpread.dex,
+			statSpread.luk
+		)
+	);
 }
 
 ReactDOM.render(

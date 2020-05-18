@@ -15,58 +15,61 @@ export function createBattleState(setupData: Table) {
 
 		moves: {
 			melee(G: Table, ctx: any) {
-				const { attacker, defender } = getInPlayAnimals(G, ctx);
+				const state = G.clone();
+				const { attacker, defender } = getInPlayAnimals(state, ctx);
 
 				const damage = getMeleeDamage(attacker);
 				const turnDamage = getTurnDamage(attacker, defender, damage);
 				defender.hp -= turnDamage;
 
-				return G;
+				return state;
 			},
 
 			range(G: Table, ctx: any) {
-				const { attacker, defender } = getInPlayAnimals(G, ctx);
+				const state = G.clone();
+				const { attacker, defender } = getInPlayAnimals(state, ctx);
 
 				const damage = getRangeDamage(attacker);
 				const turnDamage = getTurnDamage(attacker, defender, damage);
 				defender.hp -= turnDamage;
 
-				return G;
+				return state;
 			},
 
 			skill(G: Table, ctx: any) {
-				return G;
+				return G.clone();
 			},
 
 			swap(G: Table, ctx: any, swappedAnimalId: string) {
-				const animals = G.getUsersAnimals(ctx.currentPlayer);
+				const state = G.clone();
+				const animals = state.getUsersAnimals(ctx.currentPlayer);
 				const swappedAnimal = animals.find(animal => animal.id === swappedAnimalId);
 				assert(
 					swappedAnimal,
 					"swappedAnimalId must be associated to animal in current player's animals.",
-					G,
+					state,
 					ctx,
 					swappedAnimalId
 				);
 				assert(
 					swappedAnimal.hp > 0,
 					'Swapped in animal must not be fainted.',
-					G,
+					state,
 					ctx,
 					swappedAnimalId
 				);
 				const currentInBattleId = animals.find(animal =>
-					G.inBattle.has(animal.id as string)
+					state.inBattle.has(animal.id as string)
 				)?.id;
-				assert(currentInBattleId, 'must have an in battle animal.', G, ctx);
+				assert(currentInBattleId, 'must have an in battle animal.', state, ctx);
 
 				// Swap out in battle animal.
-				G.inBattle.delete(currentInBattleId);
-				G.benched.add(currentInBattleId);
-				G.inBattle.add(swappedAnimalId);
-				G.benched.delete(swappedAnimalId);
+				state.inBattle.delete(currentInBattleId);
+				state.benched.add(currentInBattleId);
+				state.inBattle.add(swappedAnimalId);
+				state.benched.delete(swappedAnimalId);
 
-				return G;
+				return state;
 			}
 		},
 
