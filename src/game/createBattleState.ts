@@ -38,7 +38,26 @@ export function createBattleState(setupData: Table) {
 				return G;
 			},
 
-			swap(G: Table, ctx: any) {
+			swap(G: Table, ctx: any, swappedAnimalId: string) {
+				const animals = G.getUsersAnimals(ctx.currentPlayer);
+				assert(
+					animals.find(animal => animal.id === swappedAnimalId),
+					"swappedAnimalId must be associated to animal in current player's animals.",
+					G,
+					ctx,
+					swappedAnimalId
+				);
+				const currentInBattleId = animals.find(animal =>
+					G.inBattle.has(animal.id as string)
+				)?.id;
+				assert(currentInBattleId, 'must have an in battle animal.', G, ctx);
+
+				// Swap out in battle animal.
+				G.inBattle.delete(currentInBattleId);
+				G.benched.add(currentInBattleId);
+				G.inBattle.add(swappedAnimalId);
+				G.benched.delete(swappedAnimalId);
+
 				return G;
 			}
 		},
