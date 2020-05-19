@@ -16,10 +16,12 @@ export function createBattleState(setupData: Table) {
 		moves: {
 			melee(G: Table, ctx: any) {
 				const state = G.clone();
+				state.previousTurnDamage = [];
 				const { attacker, defender } = getInPlayAnimals(state, ctx);
 
 				const damage = getMeleeDamage(attacker);
 				const turnDamage = getTurnDamage(attacker, defender, damage);
+				state.previousTurnDamage.push({ id: defender.id as string, amount: turnDamage });
 				defender.hp -= turnDamage;
 
 				return state;
@@ -27,10 +29,12 @@ export function createBattleState(setupData: Table) {
 
 			range(G: Table, ctx: any) {
 				const state = G.clone();
+				state.previousTurnDamage = [];
 				const { attacker, defender } = getInPlayAnimals(state, ctx);
 
 				const damage = getRangeDamage(attacker);
 				const turnDamage = getTurnDamage(attacker, defender, damage);
+				state.previousTurnDamage.push({ id: defender.id as string, amount: turnDamage });
 				defender.hp -= turnDamage;
 
 				return state;
@@ -42,6 +46,7 @@ export function createBattleState(setupData: Table) {
 
 			swap(G: Table, ctx: any, swappedAnimalId: string) {
 				const state = G.clone();
+				state.previousTurnDamage = [];
 				const animals = state.getUsersAnimals(ctx.currentPlayer);
 				const swappedAnimal = animals.find(animal => animal.id === swappedAnimalId);
 				assert(

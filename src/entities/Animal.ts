@@ -1,5 +1,3 @@
-import { assert } from '../debug/assert';
-
 export class Animal {
 	constructor(
 		public userId: string, // User associated with animal.
@@ -16,20 +14,7 @@ export class Animal {
 		public dex: number,
 		public luk: number,
 		public id?: string // Use undefined for unsaved animals.
-	) {
-		// TODO: Assert kind is valid.
-		assert(Number.isInteger(level), '', level);
-		assert(Number.isInteger(statPoints), '', statPoints);
-		assert(Number.isInteger(skillPoints), '', skillPoints);
-		assert(Number.isInteger(hp), '', hp);
-		assert(Number.isInteger(sp), '', sp);
-		assert(Number.isInteger(str), '', str);
-		assert(Number.isInteger(agi), '', agi);
-		assert(Number.isInteger(vit), '', vit);
-		assert(Number.isInteger(int), '', int);
-		assert(Number.isInteger(dex), '', dex);
-		assert(Number.isInteger(luk), '', luk);
-	}
+	) {}
 
 	clone = () => {
 		return new Animal(

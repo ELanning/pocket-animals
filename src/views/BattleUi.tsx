@@ -1,5 +1,7 @@
 // Handles the view of the Pocket Animals game.
 // https://boardgame.io/documentation/#/
+import './BattleUi.css';
+
 import { Button } from '@material-ui/core';
 import React, { FunctionComponent } from 'react';
 
@@ -42,6 +44,9 @@ export const BattleUi: FunctionComponent<Props> = ({
 	assert(usersAnimals.length, 'User must have one or more animals.', G, ctx, playerID);
 	const activeAnimal = usersAnimals.find(animal => G.inBattle.has(animal.id as string));
 	assert(activeAnimal?.id, 'User must have an in-battle animal', G, ctx);
+	const previousDamage = G.previousTurnDamage.find(
+		turnDamage => activeAnimal.id === turnDamage.id
+	)?.amount;
 
 	const benchedAnimals = usersAnimals.filter(animal => G.benched.has(animal.id as string));
 	const swapOptions = benchedAnimals.map(benched => {
@@ -56,6 +61,9 @@ export const BattleUi: FunctionComponent<Props> = ({
 	assert(enemyId, 'Battle must have an enemy id.', G, ctx);
 	const enemyAnimal = G.animals.get(enemyId as string);
 	assert(enemyAnimal?.id, 'Battle must have an enemy.', G, ctx);
+	const previousEnemyDamage = G.previousTurnDamage.find(
+		turnDamage => enemyAnimal.id === turnDamage.id
+	)?.amount;
 
 	if (ctx.gameover) {
 		return <div>Winner: {ctx.gameover.winner}</div>;
@@ -82,25 +90,45 @@ export const BattleUi: FunctionComponent<Props> = ({
 					paddingRight="4px"
 				>
 					<Box alignSelf="flex-end" paddingRight="35%">
+						{previousDamage !== undefined && (
+							<Box
+								textAlign="center"
+								fontFamily="m23"
+								fontSize="22px"
+								className="damage-font"
+							>
+								{previousDamage || 'Miss'}
+							</Box>
+						)}
 						<AnimalSprite
 							src={G.sprites.get(activeAnimal.id)?.url}
 							alt="Your cute animal"
 							margin="0 0 4px 0"
 						/>
-						<Box>
+						<Box width="86px">
 							Hp: {activeAnimal.hp} / {getMaxHp(activeAnimal.level, activeAnimal.vit)}
 							<br />
 							Sp: {activeAnimal.sp} / {getMaxSp(activeAnimal.level, activeAnimal.int)}
 						</Box>
 					</Box>
 					<Box alignSelf="flex-end">
+						{previousEnemyDamage !== undefined && (
+							<Box
+								textAlign="center"
+								fontFamily="m23"
+								fontSize="22px"
+								className="damage-font"
+							>
+								{previousEnemyDamage || 'Miss'}
+							</Box>
+						)}
 						<AnimalSprite
 							src={G.sprites.get(enemyAnimal.id)?.url}
 							alt="Enemy animal"
 							transform="scaleX(-1)" // Flip the image.
 							margin="0 0 4px 0"
 						/>
-						<Box>
+						<Box width="86px">
 							Hp: {enemyAnimal.hp} / {getMaxHp(enemyAnimal.level, enemyAnimal.vit)}
 							<br />
 							Sp: {enemyAnimal.sp} / {getMaxSp(enemyAnimal.level, enemyAnimal.int)}

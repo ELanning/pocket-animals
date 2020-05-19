@@ -5,14 +5,22 @@ import { assert } from '../debug';
 import { ExtendedMap } from '../extensions';
 import { sprite } from '../game/tables/sprite';
 import { Animal } from './Animal';
+import { Animation } from './Animation';
 import { Sprite } from './Sprite';
 import { User } from './User';
+
+type TurnDamage = {
+	id: string; // Entity id.
+	amount: number; // Amount of damage taken.
+};
 
 // Treat Entities as a SQL table. When updating, keep entities in 3rd Normal Form.
 export class Table {
 	users: ExtendedMap<User>;
 	animals: ExtendedMap<Animal>;
 	sprites: ExtendedMap<Sprite>;
+	animations: Array<Animation>;
+	previousTurnDamage: Array<TurnDamage>;
 	inBattle: Set<string>;
 	benched: Set<string>;
 	uuid: number;
@@ -21,6 +29,8 @@ export class Table {
 		this.users = new ExtendedMap<User>();
 		this.animals = new ExtendedMap<Animal>();
 		this.sprites = new ExtendedMap<Sprite>();
+		this.animations = new Array<Animation>();
+		this.previousTurnDamage = new Array<TurnDamage>();
 		this.inBattle = new Set<string>();
 		this.benched = new Set<string>();
 		this.uuid = 0;
@@ -66,6 +76,15 @@ export class Table {
 		cloned.sprites = new ExtendedMap<Sprite>(
 			this.sprites.asEntryArray().map(([id, sprite]) => [id, sprite.clone()])
 		);
+		cloned.animations = new Array<Animation>(
+			...this.animations.map(animation => animation.clone())
+		);
+		cloned.previousTurnDamage = new Array<TurnDamage>(
+			...this.previousTurnDamage.map(turnDamage => ({
+				amount: turnDamage.amount,
+				id: turnDamage.id
+			}))
+		);
 		cloned.inBattle = new Set<string>(this.inBattle);
 		cloned.benched = new Set<string>(this.benched);
 		cloned.uuid = this.uuid;
@@ -82,10 +101,34 @@ export class Table {
 	[Symbol.iterator] = () => {
 		console.warn('Only iterate on Table for debug purposes. Use clone for a deep copy.');
 
-		function* iter(users: any, animals: any, sprites: any, inBattle: any, uuid: any) {
-			yield* [{ users }, { animals }, { sprites }, { inBattle }, { uuid }];
+		function* iter(
+			users: any,
+			animals: any,
+			sprites: any,
+			animations: any,
+			previousTurnDamage: any,
+			inBattle: any,
+			uuid: any
+		) {
+			yield* [
+				{ users },
+				{ animals },
+				{ sprites },
+				{ animations },
+				{ previousTurnDamage },
+				{ inBattle },
+				{ uuid }
+			];
 		}
 
-		return iter(this.users, this.animals, this.sprites, this.inBattle, this.uuid);
+		return iter(
+			this.users,
+			this.animals,
+			this.sprites,
+			this.animations,
+			this.previousTurnDamage,
+			this.inBattle,
+			this.uuid
+		);
 	};
 }

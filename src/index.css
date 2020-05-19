@@ -3,6 +3,11 @@
 	src: local('Munro'), url(./assets/fonts/munro.ttf) format('truetype');
 }
 
+@font-face {
+	font-family: 'm23';
+	src: local('m23'), url(./assets/fonts/m23.TTF) format('truetype');
+}
+
 body {
 	margin: 0;
 	font-family: 'Munro';
