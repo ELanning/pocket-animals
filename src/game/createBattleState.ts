@@ -41,32 +41,24 @@ export function createBattleState(setupData: Table) {
 			},
 
 			skill(G: Table, ctx: any) {
-				return G.clone();
+				const state = G.clone();
+				state.previousTurnDamage = [];
+				return state;
 			},
 
 			swap(G: Table, ctx: any, swappedAnimalId: string) {
 				const state = G.clone();
 				state.previousTurnDamage = [];
 				const animals = state.getUsersAnimals(ctx.currentPlayer);
+
 				const swappedAnimal = animals.find(animal => animal.id === swappedAnimalId);
-				assert(
-					swappedAnimal,
-					"swappedAnimalId must be associated to animal in current player's animals.",
-					state,
-					ctx,
-					swappedAnimalId
-				);
-				assert(
-					swappedAnimal.hp > 0,
-					'Swapped in animal must not be fainted.',
-					state,
-					ctx,
-					swappedAnimalId
-				);
+				assert(swappedAnimal, state, ctx, swappedAnimalId);
+				assert(swappedAnimal.hp > 0, state, ctx, swappedAnimalId);
+
 				const currentInBattleId = animals.find(animal =>
 					state.inBattle.has(animal.id as string)
 				)?.id;
-				assert(currentInBattleId, 'must have an in battle animal.', state, ctx);
+				assert(currentInBattleId, state, ctx);
 
 				// Swap out in battle animal.
 				state.inBattle.delete(currentInBattleId);

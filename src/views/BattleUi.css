@@ -1,3 +1,14 @@
+@keyframes fadeoutAndUp {
+	from {
+		opacity: 1;
+		transform: translate3d(0, 0px, 0);
+	}
+	to {
+		opacity: 0;
+		transform: translate3d(0, -40px, 0);
+	}
+}
+
 .damage-font {
 	/* Great generator: https://cssgradient.io/ */
 	background: linear-gradient(
@@ -9,4 +20,18 @@
 	background-clip: text;
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
+	opacity: 0;
+	animation-name: fadeoutAndUp;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-iteration-count: 1;
+	font-family: 'm23';
+	font-size: 22px;
+	position: absolute;
+	margin-top: -18%;
+	margin-left: 35%;
+}
+
+.is-hidden {
+	visibility: hidden;
 }
