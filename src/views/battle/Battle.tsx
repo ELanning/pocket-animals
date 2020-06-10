@@ -3,18 +3,18 @@ import { Local } from 'boardgame.io/multiplayer';
 import { Client } from 'boardgame.io/react';
 import React, { FunctionComponent } from 'react';
 
-import { assert } from '../debug/assert';
-import { Table } from '../entities/Table';
-import { createBattleState } from '../game/createBattleState';
+import { assert } from '../../debug/assert';
+import { Game } from '../../entities/Game';
+import { createBattleState } from '../../gameData/createBattleState';
 import { BattleUi } from './BattleUi';
 
 interface Props {
 	currentUserId: string;
-	table: Table;
+	game: Game;
 }
 
 // Sets up the view and state of the game.
-export const Battle: FunctionComponent<Props> = ({ currentUserId, table }: Props) => {
+export const Battle: FunctionComponent<Props> = ({ currentUserId, game: table }: Props) => {
 	const enemyId = table.users.asArray().find(user => user.id !== currentUserId)?.id;
 	assert(enemyId, 'Game must have an enemy', table);
 

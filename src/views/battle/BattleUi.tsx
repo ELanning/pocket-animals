@@ -1,33 +1,31 @@
 // Handles the view of the Pocket Animals game.
 // https://boardgame.io/documentation/#/
 import './BattleUi.css';
+import './animations.css';
 
-import { Button } from '@material-ui/core';
 import React, { FunctionComponent, useEffect } from 'react';
 
-import { createText } from '../animation';
-import background from '../assets/images/background.png';
-import { assert } from '../debug/assert';
-import { Animal, Sprite, Table } from '../entities';
-import { getMaxHp, getMaxSp } from '../game';
-import { Box, Flex, Grid } from '../ui/Box';
+import { createAnimation, createText } from '../../animation';
+import background from '../../assets/images/background.png';
+import { assert } from '../../debug/assert';
+import { Animal, Animation, Game, Sprite } from '../../entities';
+import { getMaxHp, getMaxSp } from '../../gameData';
+import { Box, Flex, Grid } from '../../ui/Box';
+import { MovePanel } from './MovePanel';
 
 interface Moves {
 	melee: () => void;
 	range: () => void;
 	skill: () => void;
-	swap: () => void;
+	swap: (animalId: string) => void;
 }
 
 interface Props {
-	G: Table;
+	G: Game;
 	ctx: any;
 	moves: Moves;
 	playerID: string; // ID comes from boardgame.io framework. Prefer "id" over "ID" in all other contexts.
 	isActive: boolean;
-	isMultiplayer: boolean;
-	isConnected: boolean;
-	isPreview: boolean;
 }
 
 export const BattleUi: FunctionComponent<Props> = ({
@@ -35,10 +33,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 	ctx,
 	moves,
 	playerID,
-	isActive,
-	isMultiplayer,
-	isConnected,
-	isPreview
+	isActive
 }: Props) => {
 	// Get user's in-battle animal.
 	const usersAnimals = G.getUsersAnimals(playerID);
@@ -61,28 +56,18 @@ export const BattleUi: FunctionComponent<Props> = ({
 	assert(enemyAnimal?.id, 'Battle must have an enemy.', G, ctx);
 
 	useEffect(() => {
-		const durationMs = 3000;
-
-		// Display taken damage.
-		const previousDamage = G.previousTurnDamage.find(
-			turnDamage => activeAnimal.id === turnDamage.id
-		)?.amount;
-		if (previousDamage !== undefined) {
-			// TODO: Differentiate between miss and 0 damage taken due to reduction?
-			const damageText = previousDamage === 0 ? 'Miss' : previousDamage.toString();
-			createText(damageText, '.player-animal', ['damage-font'], durationMs);
+		async function playAnimations() {
+			assert(activeAnimal);
+			assert(enemyAnimal);
+			for (const animation of G.animations) {
+				await playAnimation(animation, activeAnimal, enemyAnimal);
+			}
+			displayDamage(G, activeAnimal, '.player-animal');
+			displayDamage(G, enemyAnimal, '.enemy-animal');
 		}
 
-		// Display enemy's taken damage.
-		const previousEnemyDamage = G.previousTurnDamage.find(
-			turnDamage => enemyAnimal.id === turnDamage.id
-		)?.amount;
-		if (previousEnemyDamage !== undefined) {
-			// TODO: Differentiate between miss and 0 damage taken due to reduction?
-			const damageText = previousEnemyDamage === 0 ? 'Miss' : previousEnemyDamage.toString();
-			createText(damageText, '.enemy-animal', ['damage-font'], 10_000_000);
-		}
-	}, [G.previousTurnDamage, activeAnimal.id, enemyAnimal.id]);
+		playAnimations();
+	}, [G, ctx, enemyAnimal, activeAnimal]);
 
 	if (ctx.gameover) {
 		return <div>Winner: {ctx.gameover.winner}</div>;
@@ -110,7 +95,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 				>
 					<Box alignSelf="flex-end" paddingRight="35%" position="relative">
 						<AnimalSprite
-							src={G.sprites.get(activeAnimal.id)?.url}
+							src={G.sprites.get(activeAnimal.id)?.src}
 							alt="Your cute animal"
 							margin="0 0 4px 0"
 							className="player-animal"
@@ -123,7 +108,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 					</Box>
 					<Box alignSelf="flex-end" position="relative">
 						<AnimalSprite
-							src={G.sprites.get(enemyAnimal.id)?.url}
+							src={G.sprites.get(enemyAnimal.id)?.src}
 							alt="Enemy animal"
 							transform="scaleX(-1)" // Flip the image.
 							margin="0 0 4px 0"
@@ -142,9 +127,33 @@ export const BattleUi: FunctionComponent<Props> = ({
 				onMelee={moves.melee}
 				onRange={moves.range}
 				onSkill={moves.skill}
-				onSwap={moves.swap}
-				swapOptions={swapOptions}
-			/>
+			>
+				<Grid gridTemplateColumns="1fr" gridColumnGap="0px">
+					{swapOptions.map(option => (
+						<Flex
+							key={option[0].id}
+							onClick={() => {
+								if (option[0].hp > 0) {
+									moves.swap(option[0].id as string);
+								}
+							}}
+						>
+							<img
+								src={option[1].src}
+								alt="Benched animal"
+								height="40px"
+								width="40px"
+								style={{ paddingRight: '8px' }}
+							/>
+							<Box>
+								Hp: {option[0].hp} / {getMaxHp(option[0].level, option[0].vit)}
+								<br />
+								Sp: {option[0].sp} / {getMaxSp(option[0].level, option[0].int)}
+							</Box>
+						</Flex>
+					))}
+				</Grid>
+			</MovePanel>
 		</Flex>
 	);
 };
@@ -167,91 +176,42 @@ function AnimalSprite({ src, alt, className, ...rest }: any) {
 	);
 }
 
-function MovePanel({
-	disabled,
-	onMelee,
-	onRange,
-	onSkill,
-	onSwap,
-	swapOptions
-}: {
-	disabled?: boolean;
-	onMelee?: () => void;
-	onRange?: () => void;
-	onSkill?: () => void;
-	onSwap?: (animalId: string) => void;
-	swapOptions: [Animal, Sprite][];
-}) {
-	return (
-		<Flex
-			borderColor="black"
-			borderStyle="solid"
-			borderRadius="2px"
-			borderWidth="7px"
-			height="100%"
-			padding="6%"
-		>
-			<Grid
-				gridTemplateColumns="1fr"
-				gridTemplateRows="repeat(3, 1fr)"
-				gridColumnGap="0px"
-				gridRowGap="16px"
-				flexGrow="1"
-			>
-				<Box>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={onMelee}
-						disabled={disabled}
-					>
-						Melee
-					</Button>
-				</Box>
-				<Box>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={onRange}
-						disabled={disabled}
-					>
-						Range
-					</Button>
-				</Box>
-				<Box>
-					<Button
-						variant="contained"
-						color="primary"
-						onClick={onSkill}
-						disabled={disabled}
-					>
-						Skill
-					</Button>
-				</Box>
-			</Grid>
-			<Grid gridTemplateColumns="1fr" gridColumnGap="0px">
-				{swapOptions.map(option => (
-					<Flex
-						key={option[0].id}
-						onClick={() => {
-							if (onSwap && option[0].hp > 0) onSwap(option[0].id as string);
-						}}
-					>
-						<img
-							src={option[1].url}
-							alt="Benched animal"
-							height="40px"
-							width="40px"
-							style={{ paddingRight: '8px' }}
-						/>
-						<Box>
-							Hp: {option[0].hp} / {getMaxHp(option[0].level, option[0].vit)}
-							<br />
-							Sp: {option[0].sp} / {getMaxSp(option[0].level, option[0].int)}
-						</Box>
-					</Flex>
-				))}
-			</Grid>
-		</Flex>
+async function playAnimation(animation: Animation, activeAnimal: Animal, enemyAnimal: Animal) {
+	let className: string | undefined;
+	let targetSelector: string | undefined;
+	let direction: string | undefined;
+
+	if (animation.targetId === enemyAnimal.id) {
+		direction = 'right';
+		className = `battle-animation-${direction}`;
+		targetSelector = '.enemy-animal';
+	} else if (animation.targetId === activeAnimal.id) {
+		direction = 'left';
+		className = `battle-animation-${direction}`;
+		targetSelector = '.player-animal';
+	}
+
+	assert(className, 'missing className', className, animation);
+	assert(targetSelector, 'missing target', animation);
+	assert(direction, 'missing direction', animation);
+
+	await createAnimation(
+		animation.frameSrcs,
+		targetSelector,
+		[className, `${animation.name}-${direction}`],
+		animation.frameDurationMs
 	);
+}
+
+function displayDamage(G: Game, target: Animal, selector: string) {
+	const durationMs = 3000;
+
+	// Display taken damage.
+	const previousDamage = G.previousTurnDamage.find(turnDamage => target.id === turnDamage.id)
+		?.amount;
+	if (previousDamage !== undefined) {
+		// TODO: Differentiate between miss and 0 damage taken due to reduction?
+		const damageText = previousDamage === 0 ? 'Miss' : previousDamage.toString();
+		createText(damageText, selector, ['damage-font'], durationMs);
+	}
 }

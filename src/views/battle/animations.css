@@ -1,0 +1,23 @@
+.melee-left,
+.melee-right {
+	position: absolute;
+	bottom: 10px;
+	right: 30px;
+}
+
+.ranged-left {
+	position: absolute;
+	bottom: 10px;
+}
+
+.ranged-right {
+	position: absolute;
+	bottom: 10px;
+	right: 46px;
+}
+
+.lightning-left,
+.lightning-right {
+	position: absolute;
+	bottom: 10px;
+}

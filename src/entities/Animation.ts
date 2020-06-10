@@ -1,11 +1,12 @@
 export class Animation {
 	constructor(
+		public name: string, // Unique name of the animation, eg 'lightning', 'fireBlast', etc.
 		public targetId: string, // Target of the animation, could be an animal, a location on the screen, etc.
-		public url: string, // Url to the animation asset.
-		public durationMs?: string // Length of the animation in milliseconds. Use undefined for infinite loops.
+		public frameSrcs: string[], // list of frame srcs of the animation asset.
+		public frameDurationMs: number // Length of each frame of the animation in milliseconds.
 	) {}
 
 	clone = () => {
-		return new Animation(this.targetId, this.url, this.durationMs);
+		return new Animation(this.name, this.targetId, this.frameSrcs, this.frameDurationMs);
 	};
 }

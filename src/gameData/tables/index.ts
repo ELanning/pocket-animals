@@ -6,4 +6,5 @@ Including:
     And so forth. */
 import animalStats from './animalStats.json';
 export { animalStats };
-export * from './sprite';
+export * from './sprites';
+export * from './animations';

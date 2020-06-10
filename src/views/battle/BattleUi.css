@@ -32,6 +32,13 @@
 	margin-left: 35%;
 }
 
-.is-hidden {
-	visibility: hidden;
+.battle-animation-right {
+	position: absolute;
+	z-index: 2;
+}
+
+.battle-animation-left {
+	position: absolute;
+	z-index: 2;
+	transform: scaleX(-1);
 }

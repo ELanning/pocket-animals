@@ -1,9 +1,11 @@
-import { assert, log } from '../debug';
-import { Animal, Table } from '../entities';
+import { assert } from '../debug';
+import { Animal, Game } from '../entities';
+import { Animation } from '../entities/Animation';
+import { animations } from './tables/animations';
 
 // Handles the model and controller part of the battle.
 // https://boardgame.io/documentation/#/
-export function createBattleState(setupData: Table) {
+export function createBattleState(setupData: Game) {
 	return {
 		name: 'pocket-animals-battle',
 
@@ -14,9 +16,8 @@ export function createBattleState(setupData: Table) {
 		},
 
 		moves: {
-			melee(G: Table, ctx: any) {
-				const state = G.clone();
-				state.previousTurnDamage = [];
+			melee(G: Game, ctx: any) {
+				const state = setupTurnState(G);
 				const { attacker, defender } = getInPlayAnimals(state, ctx);
 
 				const damage = getMeleeDamage(attacker);
@@ -24,12 +25,20 @@ export function createBattleState(setupData: Table) {
 				state.previousTurnDamage.push({ id: defender.id as string, amount: turnDamage });
 				defender.hp -= turnDamage;
 
+				state.animations.push(
+					new Animation(
+						'melee',
+						defender.id as string,
+						animations.melee.frameSrcs,
+						animations.melee.durationPerFrameMs
+					)
+				);
+
 				return state;
 			},
 
-			range(G: Table, ctx: any) {
-				const state = G.clone();
-				state.previousTurnDamage = [];
+			range(G: Game, ctx: any) {
+				const state = setupTurnState(G);
 				const { attacker, defender } = getInPlayAnimals(state, ctx);
 
 				const damage = getRangeDamage(attacker);
@@ -37,18 +46,26 @@ export function createBattleState(setupData: Table) {
 				state.previousTurnDamage.push({ id: defender.id as string, amount: turnDamage });
 				defender.hp -= turnDamage;
 
+				state.animations.push(
+					new Animation(
+						'ranged',
+						defender.id as string,
+						animations.ranged.frameSrcs,
+						animations.ranged.durationPerFrameMs
+					)
+				);
+
 				return state;
 			},
 
-			skill(G: Table, ctx: any) {
-				const state = G.clone();
+			skill(G: Game, ctx: any) {
+				const state = setupTurnState(G);
 				state.previousTurnDamage = [];
 				return state;
 			},
 
-			swap(G: Table, ctx: any, swappedAnimalId: string) {
-				const state = G.clone();
-				state.previousTurnDamage = [];
+			swap(G: Game, ctx: any, swappedAnimalId: string) {
+				const state = setupTurnState(G);
 				const animals = state.getUsersAnimals(ctx.currentPlayer);
 
 				const swappedAnimal = animals.find(animal => animal.id === swappedAnimalId);
@@ -80,10 +97,10 @@ export function createBattleState(setupData: Table) {
 				// Get the next value of playOrderPos.
 				// This is called at the end of each turn.
 				// The phase ends if this returns undefined.
-				next: (G: Table, ctx: any) => (ctx.playOrderPos + 1) % ctx.numPlayers,
+				next: (G: Game, ctx: any) => (ctx.playOrderPos + 1) % ctx.numPlayers,
 
 				// This is called at the beginning of the game / phase.
-				playOrder: (G: Table) => {
+				playOrder: (G: Game) => {
 					// Player with fastest animal goes first.
 					return [...G.inBattle]
 						.map(id => G.animals.get(id) as Animal)
@@ -93,7 +110,7 @@ export function createBattleState(setupData: Table) {
 			}
 		},
 
-		endIf: (G: Table, ctx: any) => {
+		endIf: (G: Game, ctx: any) => {
 			const enemyAnimals = G.getUsersAnimals(ctx.currentPlayer);
 			const faintedAnimals = enemyAnimals.filter(animal => animal.hp <= 0);
 			const isVictory = enemyAnimals.length === faintedAnimals.length;
@@ -115,7 +132,15 @@ export function createBattleState(setupData: Table) {
 	};
 }
 
-function getInPlayAnimals(G: Table, ctx: any) {
+function setupTurnState(G: Game) {
+	// Clears old data and avoids mutating previous state.
+	const turnState = G.clone();
+	turnState.animations = [];
+	turnState.previousTurnDamage = [];
+	return turnState;
+}
+
+function getInPlayAnimals(G: Game, ctx: any) {
 	const attacker = [...G.inBattle]
 		.map(id => G.animals.get(id) as Animal)
 		.find(animal => animal.userId === ctx.currentPlayer);
@@ -142,48 +167,33 @@ function getTurnDamage(attacker: Animal, defender: Animal, damage: number) {
 }
 
 function getMeleeDamage(animal: Animal) {
-	const meleeDamage = Math.floor(animal.level / 4 + animal.str + animal.dex / 3 + animal.luk / 2);
-	log('melee damage: ', meleeDamage);
-	return meleeDamage;
+	return Math.floor(animal.level / 4 + animal.str + animal.dex / 3 + animal.luk / 2);
 }
 
 function getRangeDamage(animal: Animal) {
-	const rangeDamage = Math.floor(animal.level / 4 + animal.str / 3 + animal.dex + animal.luk / 2);
-	log('range damage: ', rangeDamage);
-	return rangeDamage;
+	return Math.floor(animal.level / 4 + animal.str / 3 + animal.dex + animal.luk / 2);
 }
 
 function getDamageReduction(vit: number) {
-	const damageReduction = vit / 2 + Math.max(vit * 0.3, Math.pow(vit, 2) / 150);
-	log('damage reduction: ', damageReduction);
-	return damageReduction;
+	return vit / 2 + Math.max(vit * 0.3, Math.pow(vit, 2) / 150);
 }
 
 function getCritModifier(attacker: Animal, defender: Animal) {
 	const critHitRate = attacker.luk * 0.3;
 	const critDefense = defender.luk * 0.2;
-	log('crit hit rate: ', critHitRate);
-	log('crit defense: ', critDefense);
 	return (critHitRate - critDefense) / 100 > Math.random() ? 1.4 : 1;
 }
 
 function getTotalDamage(damage: number, damageReduction: number, totalModifier: number) {
-	const totalDamage = Math.floor(totalModifier * (damage - damageReduction));
-	log('total damage: ', totalDamage);
-	return totalDamage;
+	return Math.floor(totalModifier * (damage - damageReduction));
 }
 
 function getAccuracy(animal: Animal) {
-	const accuracy = 175 + animal.level + animal.dex + Math.floor(animal.luk * 0.333);
-	log('accuracy: ', accuracy);
-	return accuracy;
+	return 175 + animal.level + animal.dex + Math.floor(animal.luk * 0.333);
 }
 
 function getDodge(animal: Animal) {
-	const dodge =
-		100 + animal.level + animal.agi + Math.floor(animal.luk * 0.2) + (1 + animal.luk * 0.1);
-	log('dodge: ', dodge);
-	return dodge;
+	return 100 + animal.level + animal.agi + Math.floor(animal.luk * 0.2) + (1 + animal.luk * 0.1);
 }
 
 function checkDidHit(accuracy: number, dodge: number) {

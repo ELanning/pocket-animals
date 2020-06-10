@@ -1,5 +1,5 @@
-import { getOptions, getRandomStatSpread } from '../game/getRandomStatSpread';
-import { maxLevel, minLevel } from '../game/levels/constants';
+import { getOptions, getRandomStatSpread } from '../gameData/getRandomStatSpread';
+import { maxLevel, minLevel } from '../gameData/levels/constants';
 
 it('spends all available stat points', () => {
 	const fakeId = '1';

@@ -1,30 +1,31 @@
 import React, { FunctionComponent, useEffect, useState } from 'react';
 
 import { assert } from '../debug/assert';
-import { Table } from '../entities/Table';
-import { Battle } from './Battle';
+import { Game } from '../entities';
+import { Box } from '../ui';
+import { Battle } from './battle/Battle';
 import { Exploration } from './Exploration';
 
 interface Props {
 	currentUserId: string;
-	table: Table;
+	game: Game;
 }
 
 // Handles the transitions between all the various views.
 // Avoid putting complicated non-transition logic within this component.
-export const Routing: FunctionComponent<Props> = ({ currentUserId, table }) => {
-	const currentUser = table.users.get(currentUserId);
+export const Routing: FunctionComponent<Props> = ({ currentUserId, game }) => {
+	const currentUser = game.users.get(currentUserId);
 	const [view, setView] = useState<string>('loading');
 	const [props, setProps] = useState<any>();
 
 	// This block is for debugging purposes only.
 	useEffect(() => {
-		setProps({ table, currentUserId });
+		setProps({ game, currentUserId });
 		setView('battle');
-	}, [currentUserId, table]);
+	}, [currentUserId, game]);
 
 	const handlePrediction = (predictions: { className: string; probability: number }[]) => {
-		setProps({ table, currentUserId });
+		setProps({ game, currentUserId });
 		setView('battle');
 	};
 
@@ -45,7 +46,7 @@ export const Routing: FunctionComponent<Props> = ({ currentUserId, table }) => {
 			throw new Error(`Unexpected view: ${view}`);
 	}
 
-	assert(currentUser, 'Current user must be set.', currentUserId, table);
+	assert(currentUser, 'Current user must be set.', currentUserId, game);
 
-	return <>{viewComponent}</>;
+	return <Box maxWidth="700px">{viewComponent}</Box>;
 };

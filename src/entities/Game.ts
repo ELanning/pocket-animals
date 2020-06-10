@@ -3,7 +3,7 @@ Understand the design of this pattern before making changes:
 https://www.dataorienteddesign.com/dodbook/node5.html */
 import { assert } from '../debug';
 import { ExtendedMap } from '../extensions';
-import { sprite } from '../game/tables/sprite';
+import { sprites } from '../gameData/tables/sprites';
 import { Animal } from './Animal';
 import { Animation } from './Animation';
 import { Sprite } from './Sprite';
@@ -14,16 +14,16 @@ type TurnDamage = {
 	amount: number; // Amount of damage taken.
 };
 
-// Treat Entities as a SQL table. When updating, keep entities in 3rd Normal Form.
-export class Table {
-	users: ExtendedMap<User>;
-	animals: ExtendedMap<Animal>;
-	sprites: ExtendedMap<Sprite>;
-	animations: Array<Animation>;
-	previousTurnDamage: Array<TurnDamage>;
-	inBattle: Set<string>;
-	benched: Set<string>;
-	uuid: number;
+export class Game {
+	// Treat Entities as a SQL table. When updating, keep entities in 3rd Normal Form.
+	public users: ExtendedMap<User>;
+	public animals: ExtendedMap<Animal>;
+	public sprites: ExtendedMap<Sprite>;
+	public animations: Array<Animation>;
+	public previousTurnDamage: Array<TurnDamage>;
+	public inBattle: Set<string>;
+	public benched: Set<string>;
+	public uuid: number;
 
 	constructor() {
 		this.users = new ExtendedMap<User>();
@@ -58,7 +58,7 @@ export class Table {
 		const id = this.getUniqueId();
 		animal.id = id;
 		this.animals.set(id, animal);
-		this.sprites.set(id, new Sprite(sprite[animal.kind]));
+		this.sprites.set(id, new Sprite(sprites[animal.kind]));
 
 		return this.animals.get(id) as Animal;
 	};
@@ -66,7 +66,7 @@ export class Table {
 	// Returns a deep copy of the Table.
 	// Less efficient than the standard {...foo, bar: {...}} copy method, but more convenient.
 	public clone = () => {
-		const cloned = new Table();
+		const cloned = new Game();
 		cloned.users = new ExtendedMap<User>(
 			this.users.asArray().map(user => [user.id as string, user.clone()])
 		);
@@ -97,7 +97,7 @@ export class Table {
 		return (this.uuid++).toString();
 	};
 
-	// Hack so React dev tools work.
+	// Hack so React dev tools properly display the properties.
 	[Symbol.iterator] = () => {
 		console.warn('Only iterate on Table for debug purposes. Use clone for a deep copy.');
 
