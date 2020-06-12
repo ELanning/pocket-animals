@@ -6,6 +6,7 @@ import { ExtendedMap } from '../extensions';
 import { sprites } from '../gameData/tables/sprites';
 import { Animal } from './Animal';
 import { Animation } from './Animation';
+import { Skill } from './Skill';
 import { Sprite } from './Sprite';
 import { User } from './User';
 
@@ -20,6 +21,7 @@ export class Game {
 	public animals: ExtendedMap<Animal>;
 	public sprites: ExtendedMap<Sprite>;
 	public animations: Array<Animation>;
+	public skills: Array<Skill>;
 	public previousTurnDamage: Array<TurnDamage>;
 	public inBattle: Set<string>;
 	public benched: Set<string>;
@@ -30,6 +32,7 @@ export class Game {
 		this.animals = new ExtendedMap<Animal>();
 		this.sprites = new ExtendedMap<Sprite>();
 		this.animations = new Array<Animation>();
+		this.skills = new Array<Skill>();
 		this.previousTurnDamage = new Array<TurnDamage>();
 		this.inBattle = new Set<string>();
 		this.benched = new Set<string>();
@@ -85,9 +88,12 @@ export class Game {
 				id: turnDamage.id
 			}))
 		);
+		cloned.skills = new Array<Skill>(...this.skills.map(skill => skill.clone()));
 		cloned.inBattle = new Set<string>(this.inBattle);
 		cloned.benched = new Set<string>(this.benched);
 		cloned.uuid = this.uuid;
+
+		Game.assertCloneSucceeded(cloned, this);
 
 		return cloned;
 	};
@@ -96,6 +102,23 @@ export class Game {
 		// (Will likely be a GUID when backend is implemented.)
 		return (this.uuid++).toString();
 	};
+
+	// Forgetting to update the clone method when adding new properties is common.
+	// This function helps mitigate such issues.
+	// It is not a perfect check, but should cover the above case.
+	private static assertCloneSucceeded(a: any, b: any) {
+		for (const key of Object.keys(a)) {
+			if (a[key] instanceof Set) assert(a.size === b.size);
+			else if (a[key] instanceof Map) assert(a.size === b.size);
+			else if (Array.isArray(a[key])) assert(a.length === b.length);
+			else if (typeof a[key] === 'number') assert(a[key] === b[key]);
+			else if (typeof a[key] === 'function') assert(a[key] !== b[key]);
+			else
+				throw new TypeError(
+					`Unknown type detected: ${typeof a[key]} ${key}. Update assertCloneSucceeded.`
+				);
+		}
+	}
 
 	// Hack so React dev tools properly display the properties.
 	[Symbol.iterator] = () => {
@@ -106,6 +129,7 @@ export class Game {
 			animals: any,
 			sprites: any,
 			animations: any,
+			skills: any,
 			previousTurnDamage: any,
 			inBattle: any,
 			uuid: any
@@ -115,6 +139,7 @@ export class Game {
 				{ animals },
 				{ sprites },
 				{ animations },
+				{ skills },
 				{ previousTurnDamage },
 				{ inBattle },
 				{ uuid }
@@ -126,6 +151,7 @@ export class Game {
 			this.animals,
 			this.sprites,
 			this.animations,
+			this.skills,
 			this.previousTurnDamage,
 			this.inBattle,
 			this.uuid

@@ -1,6 +1,8 @@
 import { assert } from '../debug';
 import { Animal, Game } from '../entities';
 import { Animation } from '../entities/Animation';
+import { applySkill } from './skills';
+import { SkillName } from './tables';
 import { animations } from './tables/animations';
 
 // Handles the model and controller part of the battle.
@@ -58,9 +60,16 @@ export function createBattleState(setupData: Game) {
 				return state;
 			},
 
-			skill(G: Game, ctx: any) {
+			skill(G: Game, ctx: any, skillName: SkillName) {
 				const state = setupTurnState(G);
-				state.previousTurnDamage = [];
+				const { attacker, defender } = getInPlayAnimals(state, ctx);
+				const skill = state.skills.find(
+					skill => skill.animalId === attacker.id && skill.name === skillName
+				);
+
+				assert(skill, skillName, G, ctx);
+				applySkill[skillName]({ game: state, attacker, defender });
+
 				return state;
 			},
 
@@ -121,12 +130,27 @@ export function createBattleState(setupData: Game) {
 		},
 
 		ai: {
-			enumerate: () => {
-				return [
+			enumerate: (G: Game, ctx: any, playerID: string) => {
+				const options: { move: string; args: any[] }[] = [
 					{ move: 'melee', args: [] },
-					{ move: 'range', args: [] },
-					{ move: 'skill', args: [] }
+					{ move: 'range', args: [] }
 				];
+
+				const usersAnimals = G.getUsersAnimals(playerID);
+				const activeAnimal = usersAnimals.find(animal =>
+					G.inBattle.has(animal.id as string)
+				);
+				assert(activeAnimal);
+
+				const availableSkills = G.skills.filter(
+					skill => skill.animalId === activeAnimal.id
+				);
+
+				for (const skill of availableSkills) {
+					options.push({ move: 'skill', args: [skill.name] });
+				}
+
+				return options;
 			}
 		}
 	};

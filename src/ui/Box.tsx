@@ -25,7 +25,7 @@ import {
 	TypographyProps
 } from 'styled-system';
 
-type BoxProps = BackgroundProps &
+type Props = BackgroundProps &
 	BorderProps &
 	ColorProps &
 	FlexboxProps &
@@ -38,7 +38,7 @@ type BoxProps = BackgroundProps &
 
 // See https://styled-system.com/api/ for detailed usage.
 // eg <Box flex="1 1 auto" borderBottom="1px solid">Hello world</Box>
-export const Box = styledTs<BoxProps>(styled.div)(
+export const Box = styledTs<Props>(styled.div)(
 	compose(typography, space, color, layout, flexbox, grid, background, border, position, shadow)
 );
 

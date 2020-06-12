@@ -8,3 +8,4 @@ import animalStats from './animalStats.json';
 export { animalStats };
 export * from './sprites';
 export * from './animations';
+export * from './SkillName';

@@ -19,5 +19,6 @@
 .lightning-left,
 .lightning-right {
 	position: absolute;
-	bottom: 10px;
+	bottom: 0px;
+	left: -62px;
 }

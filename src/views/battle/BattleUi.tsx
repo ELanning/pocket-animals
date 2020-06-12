@@ -3,7 +3,8 @@
 import './BattleUi.css';
 import './animations.css';
 
-import React, { FunctionComponent, useEffect } from 'react';
+import { Button } from '@material-ui/core';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 
 import { createAnimation, createText } from '../../animation';
 import background from '../../assets/images/background.png';
@@ -12,11 +13,12 @@ import { Animal, Animation, Game, Sprite } from '../../entities';
 import { getMaxHp, getMaxSp } from '../../gameData';
 import { Box, Flex, Grid } from '../../ui/Box';
 import { MovePanel } from './MovePanel';
+import { SkillPanel } from './SkillPanel';
 
 interface Moves {
 	melee: () => void;
 	range: () => void;
-	skill: () => void;
+	skill: (skillName: string) => void;
 	swap: (animalId: string) => void;
 }
 
@@ -28,6 +30,11 @@ interface Props {
 	isActive: boolean;
 }
 
+enum View {
+	MovePanel,
+	SkillPanel
+}
+
 export const BattleUi: FunctionComponent<Props> = ({
 	G,
 	ctx,
@@ -35,6 +42,8 @@ export const BattleUi: FunctionComponent<Props> = ({
 	playerID,
 	isActive
 }: Props) => {
+	const [view, setView] = useState(View.MovePanel);
+
 	// Get user's in-battle animal.
 	const usersAnimals = G.getUsersAnimals(playerID);
 	assert(usersAnimals.length, 'User must have one or more animals.', G, ctx, playerID);
@@ -55,13 +64,17 @@ export const BattleUi: FunctionComponent<Props> = ({
 	const enemyAnimal = G.animals.get(enemyId as string);
 	assert(enemyAnimal?.id, 'Battle must have an enemy.', G, ctx);
 
+	const availableSkills = G.skills.filter(skill => skill.animalId === activeAnimal.id);
+
 	useEffect(() => {
 		async function playAnimations() {
 			assert(activeAnimal);
 			assert(enemyAnimal);
+
 			for (const animation of G.animations) {
 				await playAnimation(animation, activeAnimal, enemyAnimal);
 			}
+
 			displayDamage(G, activeAnimal, '.player-animal');
 			displayDamage(G, enemyAnimal, '.enemy-animal');
 		}
@@ -73,8 +86,6 @@ export const BattleUi: FunctionComponent<Props> = ({
 		return <div>Winner: {ctx.gameover.winner}</div>;
 	}
 
-	// See second post: https://stackoverflow.com/questions/600743/how-to-get-div-height-to-auto-adjust-to-background-size
-	// On why background values are the way they are.
 	return (
 		<Flex flexDirection="column" height="100vh">
 			<Box
@@ -122,38 +133,56 @@ export const BattleUi: FunctionComponent<Props> = ({
 					</Box>
 				</Flex>
 			</Box>
-			<MovePanel
-				disabled={!isActive}
-				onMelee={moves.melee}
-				onRange={moves.range}
-				onSkill={moves.skill}
-			>
-				<Grid gridTemplateColumns="1fr" gridColumnGap="0px">
-					{swapOptions.map(option => (
-						<Flex
-							key={option[0].id}
-							onClick={() => {
-								if (option[0].hp > 0) {
-									moves.swap(option[0].id as string);
-								}
-							}}
-						>
-							<img
-								src={option[1].src}
-								alt="Benched animal"
-								height="40px"
-								width="40px"
-								style={{ paddingRight: '8px' }}
-							/>
-							<Box>
-								Hp: {option[0].hp} / {getMaxHp(option[0].level, option[0].vit)}
-								<br />
-								Sp: {option[0].sp} / {getMaxSp(option[0].level, option[0].int)}
-							</Box>
-						</Flex>
+			{view === View.MovePanel ? (
+				<MovePanel
+					disabled={!isActive}
+					onMelee={moves.melee}
+					onRange={moves.range}
+					onSkill={() => {
+						setView(View.SkillPanel);
+					}}
+				>
+					<Grid gridTemplateColumns="1fr" gridColumnGap="0px">
+						{swapOptions.map(option => (
+							<Flex
+								key={option[0].id}
+								onClick={() => {
+									if (option[0].hp > 0) {
+										moves.swap(option[0].id as string);
+									}
+								}}
+							>
+								<img
+									src={option[1].src}
+									alt="Benched animal"
+									height="40px"
+									width="40px"
+									style={{ paddingRight: '8px' }}
+								/>
+								<Box>
+									Hp: {option[0].hp} / {getMaxHp(option[0].level, option[0].vit)}
+									<br />
+									Sp: {option[0].sp} / {getMaxSp(option[0].level, option[0].int)}
+								</Box>
+							</Flex>
+						))}
+					</Grid>
+				</MovePanel>
+			) : (
+				<SkillPanel onBackClick={() => setView(View.MovePanel)}>
+					{availableSkills.map(skill => (
+						<Box key={skill.name}>
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={() => moves.skill(skill.name)}
+							>
+								{skill.name}
+							</Button>
+						</Box>
 					))}
-				</Grid>
-			</MovePanel>
+				</SkillPanel>
+			)}
 		</Flex>
 	);
 };

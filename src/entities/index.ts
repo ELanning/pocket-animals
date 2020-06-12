@@ -4,3 +4,4 @@ export * from './Game';
 export * from './Sprite';
 export * from './User';
 export * from './Animation';
+export * from './Skill';

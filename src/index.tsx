@@ -4,8 +4,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import { assert } from './debug';
-import { Animal, Game, User } from './entities';
-import { getRandomStatSpread } from './gameData';
+import { Animal, Game, Skill, User } from './entities';
+import { getRandomStatSpread, SkillName } from './gameData';
 import * as serviceWorker from './serviceWorker';
 import { Routing } from './views';
 
@@ -15,7 +15,8 @@ const game = new Game();
 // Create user data.
 const userId = game.createUser(new User('Erik Lanning')).id as string;
 const userLevel = 50;
-createRandomAnimal(userLevel, userId, 'goose');
+const animal1 = createRandomAnimal(userLevel, userId, 'goose');
+game.skills.push(new Skill(animal1.id as string, SkillName.Lightning));
 const animal2 = createRandomAnimal(userLevel, userId, 'corgi');
 const animal3 = createRandomAnimal(userLevel, userId, 'hamster');
 const usersAnimals = game.getUsersAnimals(userId);

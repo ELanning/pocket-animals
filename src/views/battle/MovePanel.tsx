@@ -1,7 +1,8 @@
 import { Button } from '@material-ui/core';
 import React from 'react';
 
-import { Box, Flex, Grid } from '../../ui';
+import { Box, Grid } from '../../ui';
+import { BlackFrame } from './BlackFrame';
 
 export function MovePanel({
 	disabled,
@@ -17,14 +18,7 @@ export function MovePanel({
 	children: React.ReactNode;
 }) {
 	return (
-		<Flex
-			borderColor="black"
-			borderStyle="solid"
-			borderRadius="2px"
-			borderWidth="7px"
-			height="100%"
-			padding="6%"
-		>
+		<BlackFrame>
 			<Grid
 				gridTemplateColumns="1fr"
 				gridTemplateRows="repeat(3, 1fr)"
@@ -64,6 +58,6 @@ export function MovePanel({
 				</Box>
 			</Grid>
 			{children}
-		</Flex>
+		</BlackFrame>
 	);
 }
