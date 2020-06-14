@@ -28,6 +28,7 @@ function importAll(r: any) {
 const durationPerFrameMsMap = Object.freeze({
 	melee: 100,
 	ranged: 100,
+	bomb: 100,
 	lightning: 50
 });
 

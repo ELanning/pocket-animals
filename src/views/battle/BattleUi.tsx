@@ -98,7 +98,7 @@ export const BattleUi: FunctionComponent<Props> = ({
 				position="relative"
 			>
 				<Flex
-					top="22%"
+					top="19vh"
 					position="absolute"
 					height="208px"
 					paddingLeft="4px"
