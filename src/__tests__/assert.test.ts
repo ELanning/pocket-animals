@@ -16,7 +16,7 @@ it('properly serializes', () => {
 	};
 
 	try {
-		assert(false, '', exampleObject);
+		assert(false, exampleObject);
 	} catch (error) {
 		// Verify nested set.
 		expect(error.message).toContain('set');
