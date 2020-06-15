@@ -3,7 +3,8 @@ Understand the design of this pattern before making changes:
 https://www.dataorienteddesign.com/dodbook/node5.html */
 import { assert } from '../debug';
 import { ExtendedMap } from '../extensions';
-import { sprites } from '../gameData/tables/sprites';
+// TODO: Move this out of this file.
+import { sprites } from '../gameLogic/tables/sprites';
 import { Animal } from './Animal';
 import { Animation } from './Animation';
 import { Skill } from './Skill';

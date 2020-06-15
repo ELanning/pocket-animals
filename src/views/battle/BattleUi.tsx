@@ -10,7 +10,7 @@ import { createAnimation, createText } from '../../animation';
 import background from '../../assets/images/background.png';
 import { assert } from '../../debug/assert';
 import { Animal, Animation, Game, Sprite } from '../../entities';
-import { getMaxHp, getMaxSp } from '../../gameData';
+import { getMaxHp, getMaxSp } from '../../gameLogic';
 import { Box, Flex, Grid } from '../../ui/Box';
 import { MovePanel } from './MovePanel';
 import { SkillPanel } from './SkillPanel';

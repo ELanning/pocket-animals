@@ -5,7 +5,7 @@ import ReactDOM from 'react-dom';
 
 import { assert } from './debug';
 import { Animal, Game, Skill, User } from './entities';
-import { getRandomStatSpread, SkillName } from './gameData';
+import { getRandomStatSpread, SkillName } from './gameLogic';
 import * as serviceWorker from './serviceWorker';
 import { Routing } from './views';
 

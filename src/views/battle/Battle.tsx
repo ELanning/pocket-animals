@@ -5,7 +5,7 @@ import React, { FunctionComponent } from 'react';
 
 import { assert } from '../../debug/assert';
 import { Game } from '../../entities/Game';
-import { createBattleState } from '../../gameData/createBattleState';
+import { createBattleState } from '../../gameLogic/createBattleState';
 import { BattleUi } from './BattleUi';
 
 interface Props {
