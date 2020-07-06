@@ -22,6 +22,10 @@ export function createBattleState(setupData: Game) {
 
 				applySkill[SkillName.Melee]({ game: state, attacker, defender });
 
+				if (defender.hp <= 0) {
+					forceSwap(G, defender);
+				}
+
 				return state;
 			},
 
@@ -30,6 +34,10 @@ export function createBattleState(setupData: Game) {
 				const { attacker, defender } = getInPlayAnimals(state, ctx);
 
 				applySkill[SkillName.Range]({ game: state, attacker, defender });
+
+				if (defender.hp <= 0) {
+					forceSwap(G, defender);
+				}
 
 				return state;
 			},
@@ -45,7 +53,7 @@ export function createBattleState(setupData: Game) {
 				applySkill[skillName]({ game: state, attacker, defender });
 
 				if (defender.hp <= 0) {
-					// forceSwap(G, defender.userId);
+					forceSwap(G, defender);
 				}
 
 				return state;
@@ -156,12 +164,22 @@ function getInPlayAnimals(G: Game, ctx: any) {
 	return { attacker, defender };
 }
 
-/*function forceSwap(G: Game, target: Animal) {
-	// Swap out in battle animal.
-	const nextAvailableAnimal = G.animals[target.userId as string];
-	G.inBattle.add(swappedAnimalId);
-	G.benched.delete(swappedAnimalId);
+// Swaps out in battle animal.
+function forceSwap(G: Game, target: Animal) {
+	const nextAvailableAnimal = G.getUsersAnimals(target.userId).find(
+		animal => !G.inBattle.has(animal.id as string) && animal.userId === target.userId
+	);
 
-	G.inBattle.delete(target.id as string);
-	G.benched.add(target.id as string);
-}*/
+	// No available animal to swap to.
+	if (!nextAvailableAnimal) {
+		return;
+	}
+
+	const swappedId = nextAvailableAnimal.id as string;
+	G.inBattle.add(swappedId);
+	G.benched.delete(swappedId);
+
+	const targetId = target.id as string;
+	G.inBattle.delete(targetId);
+	G.benched.add(targetId);
+}

@@ -19,9 +19,9 @@ interface SkillParameters {
 
 function melee({ game, attacker, defender }: SkillParameters) {
 	const damage = getMeleeDamage(attacker);
-	const turnDamage = getTurnDamage(attacker, defender, damage);
-	game.previousTurnDamage.push({ id: defender.id as string, amount: turnDamage });
-	defender.hp -= turnDamage;
+	const totalDamage = getTotalDamage(attacker, defender, damage);
+	game.previousTurnDamage.push({ id: defender.id as string, amount: totalDamage });
+	defender.hp -= totalDamage;
 
 	game.animations.push(
 		new Animation(
@@ -35,9 +35,9 @@ function melee({ game, attacker, defender }: SkillParameters) {
 
 function range({ game, attacker, defender }: SkillParameters) {
 	const damage = getRangeDamage(attacker);
-	const turnDamage = getTurnDamage(attacker, defender, damage);
-	game.previousTurnDamage.push({ id: defender.id as string, amount: turnDamage });
-	defender.hp -= turnDamage;
+	const totalDamage = getTotalDamage(attacker, defender, damage);
+	game.previousTurnDamage.push({ id: defender.id as string, amount: totalDamage });
+	defender.hp -= totalDamage;
 
 	game.animations.push(
 		new Animation(
@@ -51,7 +51,10 @@ function range({ game, attacker, defender }: SkillParameters) {
 
 function lightning({ game, attacker, defender }: SkillParameters) {
 	attacker.sp -= 10;
-	defender.hp -= 30;
+	const damage = 30;
+	game.previousTurnDamage.push({ id: defender.id as string, amount: damage });
+	defender.hp -= damage;
+
 	game.animations.push(
 		new Animation(
 			'lightning',
@@ -62,10 +65,10 @@ function lightning({ game, attacker, defender }: SkillParameters) {
 	);
 }
 
-function getTurnDamage(attacker: Animal, defender: Animal, damage: number) {
+function getTotalDamage(attacker: Animal, defender: Animal, damage: number) {
 	const reduction = getDamageReduction(defender.vit);
 	const critDamageModifier = getCritModifier(attacker, defender);
-	const totalDamage = getTotalDamage(damage, reduction, critDamageModifier);
+	const totalDamage = getReductedDamage(damage, reduction, critDamageModifier);
 
 	const accuracy = getAccuracy(attacker);
 	const dodge = getDodge(defender);
@@ -92,7 +95,7 @@ function getCritModifier(attacker: Animal, defender: Animal) {
 	return (critHitRate - critDefense) / 100 > Math.random() ? 1.4 : 1;
 }
 
-function getTotalDamage(damage: number, damageReduction: number, totalModifier: number) {
+function getReductedDamage(damage: number, damageReduction: number, totalModifier: number) {
 	return Math.floor(totalModifier * (damage - damageReduction));
 }
 
