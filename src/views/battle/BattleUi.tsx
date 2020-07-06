@@ -7,7 +7,7 @@ import { Button } from '@material-ui/core';
 import React, { FunctionComponent, useEffect, useState } from 'react';
 
 import { createAnimation, createText } from '../../animation';
-import background from '../../assets/images/background.png';
+import background from '../../assets/images/background2.png';
 import { assert } from '../../debug/assert';
 import { Animal, Animation, Game, Sprite } from '../../entities';
 import { getMaxHp, getMaxSp } from '../../gameLogic';

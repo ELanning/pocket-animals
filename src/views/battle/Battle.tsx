@@ -1,11 +1,10 @@
-import { MCTSBot } from 'boardgame.io/ai';
 import { Local } from 'boardgame.io/multiplayer';
 import { Client } from 'boardgame.io/react';
 import React, { FunctionComponent } from 'react';
 
 import { assert } from '../../debug/assert';
 import { Game } from '../../entities/Game';
-import { createBattleState } from '../../gameLogic/createBattleState';
+import { createBattleState, createBot } from '../../gameLogic';
 import { BattleUi } from './BattleUi';
 
 interface Props {
@@ -25,7 +24,7 @@ export const Battle: FunctionComponent<Props> = ({ currentUserId, game: table }:
 		board: BattleUi,
 		numPlayers: 2,
 		multiplayer: Local({
-			bots: { [enemyId]: MCTSBot }
+			bots: { [enemyId]: createBot }
 		}),
 		debug: false
 	});

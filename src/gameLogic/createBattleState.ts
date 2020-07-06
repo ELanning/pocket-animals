@@ -44,6 +44,10 @@ export function createBattleState(setupData: Game) {
 				assert(skill, skillName, G, ctx);
 				applySkill[skillName]({ game: state, attacker, defender });
 
+				if (defender.hp <= 0) {
+					// forceSwap(G, defender.userId);
+				}
+
 				return state;
 			},
 
@@ -151,3 +155,13 @@ function getInPlayAnimals(G: Game, ctx: any) {
 
 	return { attacker, defender };
 }
+
+/*function forceSwap(G: Game, target: Animal) {
+	// Swap out in battle animal.
+	const nextAvailableAnimal = G.animals[target.userId as string];
+	G.inBattle.add(swappedAnimalId);
+	G.benched.delete(swappedAnimalId);
+
+	G.inBattle.delete(target.id as string);
+	G.benched.add(target.id as string);
+}*/
